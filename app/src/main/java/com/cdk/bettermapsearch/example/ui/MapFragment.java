@@ -12,16 +12,15 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cdk.bettermapsearch.project.CustomPagerAdapter;
-import com.cdk.bettermapsearch.project.MapPagerView;
 import com.cdk.bettermapsearch.R;
-import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
-import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
 import com.cdk.bettermapsearch.example.models.ItemModel;
 import com.cdk.bettermapsearch.example.models.LatLngModel;
+import com.cdk.bettermapsearch.project.CustomPagerAdapter;
+import com.cdk.bettermapsearch.project.MapPagerView;
+import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
+import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
@@ -151,6 +150,7 @@ public class MapFragment extends Fragment {
         return displayMetrics.heightPixels;
     }
 
+    // TODO: This needs to be encapsulated somehow
     public void dataIsRefreshed(List<LatLngModel> items) {
         List<MyClusterItem> clusterItems = new ArrayList<>();
         for (LatLngModel item : items) {
@@ -214,13 +214,11 @@ public class MapFragment extends Fragment {
 
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageView;
         private TextView title;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
 
-            imageView = (ImageView) itemView.findViewById(R.id.image);
             title = (TextView) itemView.findViewById(R.id.title);
         }
     }

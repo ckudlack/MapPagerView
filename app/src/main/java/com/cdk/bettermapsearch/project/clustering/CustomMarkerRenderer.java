@@ -57,7 +57,6 @@ public abstract class CustomMarkerRenderer<T extends CustomClusterItem> extends 
     protected void onBeforeClusterRendered(Cluster<T> cluster, MarkerOptions markerOptions) {
         boolean clusterContainsSelectedItem = false;
 
-        // TODO: Need to catch cast exception?
         T selectedItem = itemCallback.getSelectedItem();
         if (selectedItem != null) {
             for (T clusterItem : cluster.getItems()) {
@@ -72,11 +71,11 @@ public abstract class CustomMarkerRenderer<T extends CustomClusterItem> extends 
             previousClusterItem = selectedItem;
             previousCluster = cluster;
 
-            setupClusterView(cluster, colorNormal);
-            clusterIconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
-        } else {
             setupClusterView(cluster, colorActivated);
             clusterIconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+        } else {
+            setupClusterView(cluster, colorNormal);
+            clusterIconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
         }
 
 
@@ -89,10 +88,10 @@ public abstract class CustomMarkerRenderer<T extends CustomClusterItem> extends 
         if (itemCallback.getSelectedItem() != null && itemCallback.getSelectedItem().equals(item)) {
             previousClusterItem = item;
             setupClusterItemView(item, colorNormal);
-            iconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
+            iconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
         } else {
             setupClusterItemView(item, colorActivated);
-            iconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+            iconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
         }
 
         Bitmap icon = iconGenerator.makeIcon();

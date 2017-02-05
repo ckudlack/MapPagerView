@@ -39,8 +39,10 @@ public class CustomPagerAdapter<LT extends ViewPagerItem, VH extends RecyclerVie
     @Override
     public void onViewAttachedToWindow(VH holder) {
         super.onViewAttachedToWindow(holder);
+
         final int position = holder.getAdapterPosition();
         holder.itemView.setVisibility(View.VISIBLE);
+
         final ViewCreatedCallback viewCreatedCallback = callbackMap.get(position);
         if (viewCreatedCallback != null) {
             viewCreatedCallback.viewCreated(position);

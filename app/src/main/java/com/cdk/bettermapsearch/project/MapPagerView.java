@@ -226,7 +226,6 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
 
     public void onCreate(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);
-        // TODO: Maybe put the initialization stuff in here?
     }
 
     public void getMapAsync() {
