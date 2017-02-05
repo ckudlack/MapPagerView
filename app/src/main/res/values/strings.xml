@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BetterMapSearch</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="maps_api_key"> AIzaSyB1mgyugofar-NvmRpiUzOWcBux6jlyrfc </string>
+</resources>
