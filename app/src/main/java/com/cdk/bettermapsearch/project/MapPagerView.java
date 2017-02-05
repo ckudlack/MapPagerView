@@ -15,11 +15,12 @@ import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import com.cdk.bettermapsearch.R;
+import com.cdk.bettermapsearch.example.ui.MapFragment;
 import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
-import com.cdk.bettermapsearch.example.ui.MapFragment;
 import com.cdk.bettermapsearch.project.interfaces.MapReadyCallback;
+import com.cdk.bettermapsearch.project.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -52,7 +53,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
         ClusterManager.OnClusterInfoWindowClickListener<T>,
         ClusterManager.OnClusterItemClickListener<T>,
         ClusterManager.OnClusterItemInfoWindowClickListener<T>,
-        CustomMarkerRenderer.SelectedItemCallback<T> {
+        SelectedItemCallback<T> {
 
     public MapPagerView(Context context) {
         super(context);

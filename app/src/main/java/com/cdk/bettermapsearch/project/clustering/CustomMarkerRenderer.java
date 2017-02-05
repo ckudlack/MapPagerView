@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
-import android.view.View;
 
+import com.cdk.bettermapsearch.project.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,30 +27,20 @@ public abstract class CustomMarkerRenderer<T extends CustomClusterItem> extends 
     private Cluster<T> previousCluster;
     private T previousClusterItem;
 
-    private View clusterView;
-    private View clusterItemView;
-
     private int colorNormal;
     private int colorActivated;
 
     private SelectedItemCallback<T> itemCallback;
 
-    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
         super(context, map, clusterManager);
         this.context = context;
+        this.colorNormal = colorNormal;
+        this.colorActivated = colorActivated;
 
         // Application context is used in MapsUtils sample app
         iconGenerator = new IconGenerator(context.getApplicationContext());
         clusterIconGenerator = new IconGenerator(context.getApplicationContext());
-    }
-
-    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager, SelectedItemCallback<T> itemCallback) {
-        super(context, map, clusterManager);
-        this.itemCallback = itemCallback;
-    }
-
-    public interface SelectedItemCallback<T extends CustomClusterItem> {
-        T getSelectedItem();
     }
 
     @Override

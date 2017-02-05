@@ -98,12 +98,11 @@ public class MapFragment extends Fragment {
         final ItemModel itemModel = new Gson().fromJson(items, ItemModel.class);
 
         mapPagerView.onCreate(null); // savedInstanceState crashes this sometimes
-        mapPagerView.initialize(getPhoneHeight(getActivity()), (googleMap1, clusterManager) -> {
-            final MyMarkerRenderer markerRenderer = new MyMarkerRenderer(getContext(), googleMap1, clusterManager);
-            markerRenderer.setColorActivated(android.R.color.black);
-            markerRenderer.setColorNormal(android.R.color.white);
+        mapPagerView.initialize(getPhoneHeight(getActivity()), (googleMap, clusterManager) -> {
             dataIsRefreshed(itemModel.getItems());
-            return markerRenderer;
+
+
+            return new MyMarkerRenderer(getContext(), googleMap, clusterManager, android.R.color.white, android.R.color.black);
         });
         mapPagerView.getMapAsync();
     }
@@ -197,8 +196,8 @@ public class MapFragment extends Fragment {
 
     public static class MyMarkerRenderer extends CustomMarkerRenderer<MyClusterItem> {
 
-        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<MyClusterItem> clusterManager) {
-            super(context, map, clusterManager);
+        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<MyClusterItem> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
+            super(context, map, clusterManager, colorNormal, colorActivated);
         }
 
         @Override
