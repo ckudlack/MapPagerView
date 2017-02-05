@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomPagerAdapter<LT extends ViewPagerItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class CustomPagerAdapter<LT extends ViewPagerItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     protected List<LT> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
