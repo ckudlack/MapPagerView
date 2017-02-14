@@ -19,20 +19,19 @@ import com.cdk.bettermapsearch.example.models.ItemModel;
 import com.cdk.bettermapsearch.example.models.LatLngModel;
 import com.cdk.bettermapsearch.project.CustomPagerAdapter;
 import com.cdk.bettermapsearch.project.MapPagerView;
-import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
+import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
+import com.cdk.bettermapsearch.project.interfaces.MapReadyCallback;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements MapReadyCallback<LatLngModel> {
 
     private static final String items = "{\n" +
             "  \"items\": [\n" +
@@ -71,8 +70,7 @@ public class MapFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private MapPagerView<MyClusterItem> mapPagerView;
-    private MyViewPagerAdapter viewPagerAdapter;
+    private MapPagerView<LatLngModel> mapPagerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,17 +91,11 @@ public class MapFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         mapPagerView = ButterKnife.findById(view, R.id.map_pager);
+        mapPagerView.setAdapter(new MyViewPagerAdapter());
 
         // Add backing list
-        final ItemModel itemModel = new Gson().fromJson(items, ItemModel.class);
-
         mapPagerView.onCreate(null); // savedInstanceState crashes this sometimes
-        mapPagerView.initialize(getPhoneHeight(getActivity()), (googleMap, clusterManager) -> {
-            dataIsRefreshed(itemModel.getItems());
-
-
-            return new MyMarkerRenderer(getContext(), googleMap, clusterManager, android.R.color.white, android.R.color.black);
-        });
+        mapPagerView.initialize(getPhoneHeight(getActivity()), this);
         mapPagerView.getMapAsync();
     }
 
@@ -149,64 +141,35 @@ public class MapFragment extends Fragment {
         return displayMetrics.heightPixels;
     }
 
-    // TODO: This needs to be encapsulated somehow
-    public void dataIsRefreshed(List<LatLngModel> items) {
-        List<MyClusterItem> clusterItems = new ArrayList<>();
-        for (LatLngModel item : items) {
+    @Override
+    public CustomMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, CachedClusterManager<LatLngModel> clusterManager) {
+        final ItemModel itemModel = new Gson().fromJson(items, ItemModel.class);
+        final List<LatLngModel> items = itemModel.getItems();
 
-            final int index = items.indexOf(item);
-            item.setIndex(index);
+        mapPagerView.updateMapItems(items);
 
-            MyClusterItem clusterItem = new MyClusterItem(item.getPosition(), index);
-            clusterItems.add(clusterItem);
-        }
-
-        viewPagerAdapter = new MyViewPagerAdapter(items);
-
-        mapPagerView.populate(clusterItems, viewPagerAdapter);
+        return new MyMarkerRenderer(getContext(), googleMap, clusterManager, android.R.color.white, android.R.color.black);
     }
 
     public static class ViewCreatedEvent {
         // TODO: Put some stuff in here?
     }
 
-    // Some test classes
+    //region test classes
 
-    public static class MyClusterItem extends CustomClusterItem {
+    public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
 
-        public MyClusterItem(LatLng position, int index) {
-            super(position, index);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            CustomClusterItem that = (CustomClusterItem) o;
-            return position.equals(that.getPosition());
-
-        }
-
-        @Override
-        public int hashCode() {
-            return position.hashCode();
-        }
-    }
-
-    public static class MyMarkerRenderer extends CustomMarkerRenderer<MyClusterItem> {
-
-        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<MyClusterItem> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
+        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
             super(context, map, clusterManager, colorNormal, colorActivated);
         }
 
         @Override
-        public void setupClusterView(Cluster<MyClusterItem> cluster, @ColorRes int colorRes) {
+        public void setupClusterView(Cluster<LatLngModel> cluster, @ColorRes int colorRes) {
 
         }
 
         @Override
-        public void setupClusterItemView(MyClusterItem item, @ColorRes int colorRes) {
+        public void setupClusterItemView(LatLngModel item, @ColorRes int colorRes) {
 
         }
     }
@@ -223,6 +186,9 @@ public class MapFragment extends Fragment {
     }
 
     public static class MyViewPagerAdapter extends CustomPagerAdapter<LatLngModel, ItemViewHolder> {
+
+        public MyViewPagerAdapter() {
+        }
 
         public MyViewPagerAdapter(List<LatLngModel> backingList) {
             super(backingList);
@@ -243,4 +209,6 @@ public class MapFragment extends Fragment {
             return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.pager_item_view, parent, false));
         }
     }
+
+    //endregion
 }

@@ -1,38 +1,27 @@
 package com.cdk.bettermapsearch.example.models;
 
-import com.cdk.bettermapsearch.project.interfaces.ViewPagerItem;
-import com.google.android.gms.maps.model.LatLng;
+import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
 
-public class LatLngModel implements ViewPagerItem {
+/*
+    Test model representing what you might get from the server
+ */
+public class LatLngModel extends CustomClusterItem {
 
-    private double latitude;
-    private double longitude;
-    private LatLng position;
-    private int index;
+    private String title;
+    private int price;
 
-    public double getLatitude() {
-        return latitude;
-    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    public double getLongitude() {
-        return longitude;
+        CustomClusterItem that = (CustomClusterItem) o;
+        return position.equals(that.getPosition());
+
     }
 
     @Override
-    public LatLng getPosition() {
-        if (position == null) {
-            position = new LatLng(latitude, longitude);
-        }
-        return position;
-    }
-
-    @Override
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
+    public int hashCode() {
+        return position.hashCode();
     }
 }

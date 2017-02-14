@@ -383,20 +383,26 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
     }
 
     // This is called every time data is refreshed
-    public void populate(List<T> clusterItems, CustomPagerAdapter adapter) {
-        clusterManager.clearItems();
-
-        clusterManager.addItems(clusterItems);
-
-        if (viewPager.getAdapter() == null) {
+    public void setAdapter(CustomPagerAdapter adapter) {
+        if (pagerAdapter == null) {
             viewPager.setAdapter(adapter);
         } else {
             viewPager.swapAdapter(adapter, true);
         }
-
         this.pagerAdapter = adapter;
+    }
 
+    // We should only be using one list
+    public void updateMapItems(List<T> clusterItems) {
+        for (int i = 0; i < clusterItems.size(); i++) {
+            // set up each cluster item with the information it needs
+            clusterItems.get(i).initialize(i);
+        }
+
+        clusterManager.addItems(clusterItems);
         clusterManager.cluster();
+
+        pagerAdapter.updateItems(clusterItems);
         setLoadingIndicator(false);
     }
 

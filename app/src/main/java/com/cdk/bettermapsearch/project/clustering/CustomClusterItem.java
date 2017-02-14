@@ -5,11 +5,13 @@ import com.google.maps.android.clustering.ClusterItem;
 
 public abstract class CustomClusterItem implements ClusterItem {
 
-    protected final LatLng position;
-    private final int index;
+    private double latitude;
+    private double longitude;
+    protected LatLng position;
+    private int index;
 
-    public CustomClusterItem(LatLng position, int index) {
-        this.position = position;
+    public void initialize(int index) {
+        position = new LatLng(latitude, longitude);
         this.index = index;
     }
 

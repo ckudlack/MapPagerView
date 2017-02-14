@@ -5,17 +5,20 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
 import com.cdk.bettermapsearch.project.interfaces.ViewCreatedCallback;
-import com.cdk.bettermapsearch.project.interfaces.ViewPagerItem;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CustomPagerAdapter<LT extends ViewPagerItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class CustomPagerAdapter<LT extends CustomClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     protected List<LT> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
+
+    public CustomPagerAdapter() {
+    }
 
     public CustomPagerAdapter(List<LT> backingList) {
         this.backingList.addAll(backingList);
@@ -59,5 +62,10 @@ public abstract class CustomPagerAdapter<LT extends ViewPagerItem, VH extends Re
 
     public LatLng getItemPositionOnMap(int index) {
         return backingList.get(index).getPosition();
+    }
+
+    public final void updateItems(List<LT> items) {
+        this.backingList.clear();
+        this.backingList.addAll(items);
     }
 }
