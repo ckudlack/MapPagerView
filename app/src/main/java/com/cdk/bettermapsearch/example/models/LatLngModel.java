@@ -1,11 +1,11 @@
 package com.cdk.bettermapsearch.example.models;
 
-import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
+import com.cdk.bettermapsearch.project.clustering.MapClusterItem;
 
 /*
     Test model representing what you might get from the server
  */
-public class LatLngModel extends CustomClusterItem {
+public class LatLngModel extends MapClusterItem {
 
     private String title;
     private int price;
@@ -15,7 +15,7 @@ public class LatLngModel extends CustomClusterItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CustomClusterItem that = (CustomClusterItem) o;
+        MapClusterItem that = (MapClusterItem) o;
         return position.equals(that.getPosition());
 
     }

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.cdk.bettermapsearch.R;
 import com.cdk.bettermapsearch.example.models.ItemModel;
 import com.cdk.bettermapsearch.example.models.LatLngModel;
-import com.cdk.bettermapsearch.project.CustomPagerAdapter;
+import com.cdk.bettermapsearch.project.MapPagerAdapter;
 import com.cdk.bettermapsearch.project.MapPagerView;
 import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
@@ -181,7 +181,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         }
     }
 
-    public static class MyViewPagerAdapter extends CustomPagerAdapter<LatLngModel, ItemViewHolder> {
+    public static class MyViewPagerAdapter extends MapPagerAdapter<LatLngModel, ItemViewHolder> {
 
         public MyViewPagerAdapter() {
         }

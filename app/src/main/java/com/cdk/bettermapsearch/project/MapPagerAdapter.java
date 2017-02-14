@@ -5,19 +5,19 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
+import com.cdk.bettermapsearch.project.clustering.MapClusterItem;
 import com.cdk.bettermapsearch.project.interfaces.ViewCreatedCallback;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CustomPagerAdapter<LT extends CustomClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     protected List<LT> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
 
-    public CustomPagerAdapter() {
+    public MapPagerAdapter() {
     }
 
     @Override

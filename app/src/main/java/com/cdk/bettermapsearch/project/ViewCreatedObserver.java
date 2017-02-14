@@ -9,11 +9,11 @@ import rx.Observable;
 import rx.Subscriber;
 
 public class ViewCreatedObserver implements Observable.OnSubscribe<Void> {
-    private CustomPagerAdapter adapter;
+    private MapPagerAdapter adapter;
     private int viewPosition;
     private RecyclerViewPager viewPager;
 
-    public ViewCreatedObserver(CustomPagerAdapter adapter, int position, RecyclerViewPager viewPager) {
+    public ViewCreatedObserver(MapPagerAdapter adapter, int position, RecyclerViewPager viewPager) {
         this.adapter = adapter;
         this.viewPosition = position;
         this.viewPager = viewPager;

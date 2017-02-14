@@ -3,7 +3,7 @@ package com.cdk.bettermapsearch.project.clustering;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
-public abstract class CustomClusterItem implements ClusterItem {
+public abstract class MapClusterItem implements ClusterItem {
 
     private double latitude;
     private double longitude;

@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.cdk.bettermapsearch.R;
 import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
-import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
+import com.cdk.bettermapsearch.project.clustering.MapClusterItem;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
 import com.cdk.bettermapsearch.project.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.project.interfaces.SelectedItemCallback;
@@ -42,7 +42,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout implements
+public class MapPagerView<T extends MapClusterItem> extends RelativeLayout implements
         OnMapReadyCallback,
         GoogleMap.InfoWindowAdapter,
         GoogleMap.OnMapClickListener,
@@ -76,7 +76,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
     private CachedClusterManager<T> clusterManager;
     private GoogleMap googleMap;
     private T currentlySelectedItem;
-    private CustomPagerAdapter pagerAdapter;
+    private MapPagerAdapter pagerAdapter;
     private int phoneHeight;
     private CustomMarkerRenderer<T> markerRenderer;
     private MapReadyCallback<T> mapReadyCallback;
@@ -382,7 +382,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
     }
 
     // This is called every time data is refreshed
-    public void setAdapter(CustomPagerAdapter adapter) {
+    public void setAdapter(MapPagerAdapter adapter) {
         if (pagerAdapter == null) {
             viewPager.setAdapter(adapter);
         } else {
@@ -391,7 +391,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
         this.pagerAdapter = adapter;
     }
 
-    // We should only be using one list
+    @SuppressWarnings("unchecked")
     public void updateMapItems(List<T> clusterItems) {
         for (int i = 0; i < clusterItems.size(); i++) {
             // set up each cluster item with the information it needs

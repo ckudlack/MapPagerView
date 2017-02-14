@@ -18,7 +18,7 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.Collection;
 
-public abstract class CustomMarkerRenderer<T extends CustomClusterItem> extends DefaultClusterRenderer<T> {
+public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
     private Context context;
 
