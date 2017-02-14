@@ -20,10 +20,6 @@ public abstract class CustomPagerAdapter<LT extends CustomClusterItem, VH extend
     public CustomPagerAdapter() {
     }
 
-    public CustomPagerAdapter(List<LT> backingList) {
-        this.backingList.addAll(backingList);
-    }
-
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         return null;

@@ -15,7 +15,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import com.cdk.bettermapsearch.R;
-import com.cdk.bettermapsearch.example.ui.MapFragment;
 import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.project.clustering.CustomClusterItem;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
@@ -264,7 +263,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
 
-        List<Observable<MapFragment.ViewCreatedEvent>> observables = new ArrayList<>();
+        List<Observable<Void>> observables = new ArrayList<>();
 
         for (int i = Math.max(pos - 1, 0); i <= Math.min(pagerAdapter.getItemCount() - 1, pos + 1); i++) {
             if (viewPager.findViewHolderForAdapterPosition(i) == null) {
@@ -276,10 +275,10 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
             if (viewSubscriber != null) {
                 viewSubscriber.unsubscribe();
             }
-            viewSubscriber = Observable.combineLatest(observables, args -> new MapFragment.ViewCreatedEvent())
+            viewSubscriber = Observable.combineLatest(observables, args -> null)
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<MapFragment.ViewCreatedEvent>() {
+                    .subscribe(new Subscriber<Object>() {
                         @Override
                         public void onCompleted() {
                         }
@@ -289,7 +288,7 @@ public class MapPagerView<T extends CustomClusterItem> extends RelativeLayout im
                         }
 
                         @Override
-                        public void onNext(MapFragment.ViewCreatedEvent viewCreatedEvent) {
+                        public void onNext(Object ignored) {
                             pagerAdapter.clearCallbacks();
                             showViewPager();
                         }

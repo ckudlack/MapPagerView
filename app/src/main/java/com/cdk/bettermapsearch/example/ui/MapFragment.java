@@ -151,10 +151,6 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         return new MyMarkerRenderer(getContext(), googleMap, clusterManager, android.R.color.white, android.R.color.black);
     }
 
-    public static class ViewCreatedEvent {
-        // TODO: Put some stuff in here?
-    }
-
     //region test classes
 
     public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
@@ -188,10 +184,6 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
     public static class MyViewPagerAdapter extends CustomPagerAdapter<LatLngModel, ItemViewHolder> {
 
         public MyViewPagerAdapter() {
-        }
-
-        public MyViewPagerAdapter(List<LatLngModel> backingList) {
-            super(backingList);
         }
 
         @Override
