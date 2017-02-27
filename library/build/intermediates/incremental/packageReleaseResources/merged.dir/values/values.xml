@@ -4,7 +4,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <string name="app_name">BetterMapSearch</string>
-    <string name="maps_api_key"> AIzaSyCnZumZ5aZ4yc4WScHmtjCYCfFo2u6wnm8 </string>
+    <string name="maps_api_key">AIzaSyCnZumZ5aZ4yc4WScHmtjCYCfFo2u6wnm8</string>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>

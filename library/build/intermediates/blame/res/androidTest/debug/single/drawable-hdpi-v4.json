@@ -12,12 +12,12 @@
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_ic_menu_paste_mtrl_am_alpha.png"
     },
     {
-        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png",
-        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png"
-    },
-    {
         "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png",
+        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png"
     },
     {
         "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png",
@@ -168,12 +168,12 @@
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png"
     },
     {
-        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/common_google_signin_btn_text_light_disabled.9.png",
-        "source": "/Users/chris/.android/build-cache/9fc556e1738f8934b7f57d9471febfe9d2a614cf/output/res/drawable-hdpi-v4/common_google_signin_btn_text_light_disabled.9.png"
-    },
-    {
         "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_ic_star_black_36dp.png",
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-hdpi-v4/abc_ic_star_black_36dp.png"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/common_google_signin_btn_text_light_disabled.9.png",
+        "source": "/Users/chris/.android/build-cache/9fc556e1738f8934b7f57d9471febfe9d2a614cf/output/res/drawable-hdpi-v4/common_google_signin_btn_text_light_disabled.9.png"
     },
     {
         "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-hdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png",

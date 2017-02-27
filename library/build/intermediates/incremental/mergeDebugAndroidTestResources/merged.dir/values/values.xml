@@ -515,7 +515,7 @@
     <string name="library_smoothprogressbar_libraryWebsite">https://github.com/castorflex/SmoothProgressBar</string>
     <string name="library_smoothprogressbar_licenseId">apache_2_0</string>
     <string name="library_smoothprogressbar_repositoryLink">https://github.com/castorflex/SmoothProgressBar.git</string>
-    <string name="maps_api_key"> AIzaSyCnZumZ5aZ4yc4WScHmtjCYCfFo2u6wnm8 </string>
+    <string name="maps_api_key">AIzaSyCnZumZ5aZ4yc4WScHmtjCYCfFo2u6wnm8</string>
     <string name="search_menu_title">Search</string>
     <item format="float" name="spb_default_speed" type="string">1</item>
     <string name="status_bar_notification_info_overflow">999+</string>

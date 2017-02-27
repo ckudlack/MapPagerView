@@ -260,11 +260,11 @@
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-xhdpi-v4/abc_ic_star_half_black_36dp.png"
     },
     {
-        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/common_google_signin_btn_text_dark_pressed.9.png",
-        "source": "/Users/chris/.android/build-cache/9fc556e1738f8934b7f57d9471febfe9d2a614cf/output/res/drawable-xhdpi-v4/common_google_signin_btn_text_dark_pressed.9.png"
-    },
-    {
         "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
         "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/common_google_signin_btn_text_dark_pressed.9.png",
+        "source": "/Users/chris/.android/build-cache/9fc556e1738f8934b7f57d9471febfe9d2a614cf/output/res/drawable-xhdpi-v4/common_google_signin_btn_text_dark_pressed.9.png"
     }
 ]
