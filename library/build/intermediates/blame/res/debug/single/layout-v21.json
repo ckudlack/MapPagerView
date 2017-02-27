@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/debug/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/debug/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/debug/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/chris/Desktop/Projects/BetterMapSearch/library/build/intermediates/res/merged/debug/layout-v21/notification_action.xml",
+        "source": "/Users/chris/.android/build-cache/950635660be682d7e72539240a2afe7b347fbed0/output/res/layout-v21/notification_action.xml"
+    }
+]
