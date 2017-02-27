@@ -16,14 +16,15 @@ import android.widget.RelativeLayout;
 
 import com.cdk.bettermapsearch.R;
 import com.cdk.bettermapsearch.project.clustering.CachedClusterManager;
-import com.cdk.bettermapsearch.project.clustering.MapClusterItem;
 import com.cdk.bettermapsearch.project.clustering.CustomMarkerRenderer;
+import com.cdk.bettermapsearch.project.clustering.MapClusterItem;
 import com.cdk.bettermapsearch.project.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.project.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -93,13 +94,6 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         viewPager.addOnPageChangedListener(this);
         viewPager.setHasFixedSize(true);
         progressBar.progressiveStop();
-    }
-
-    public void initialize(int phoneHeight, MapReadyCallback<T> callback) {
-        this.phoneHeight = phoneHeight;
-        this.mapReadyCallback = callback;
-
-        viewPager.getLayoutParams().height = (int) (phoneHeight * 0.25);
     }
 
     //region Map and clustering callbacks
@@ -224,11 +218,15 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     //region wrappers for MapView lifecycle
 
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState, int phoneHeight) {
         mapView.onCreate(savedInstanceState);
+
+        this.phoneHeight = phoneHeight;
+        viewPager.getLayoutParams().height = (int) (phoneHeight * 0.25);
     }
 
-    public void getMapAsync() {
+    public void getMapAsync(MapReadyCallback<T> callback) {
+        this.mapReadyCallback = callback;
         mapView.getMapAsync(this);
     }
 
@@ -256,6 +254,35 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         mapView.onLowMemory();
     }
 
+    //endregion
+
+    //region override callbacks
+
+    public void setOnInfoWindowClickListener(GoogleMap.OnInfoWindowClickListener listener) {
+        if (googleMap != null) {
+            googleMap.setOnInfoWindowClickListener(listener);
+        }
+    }
+
+    public void setInfoWindowAdapter(GoogleMap.InfoWindowAdapter windowAdapter) {
+        if (googleMap != null) {
+            googleMap.setInfoWindowAdapter(windowAdapter);
+        }
+    }
+
+    public void setOnMapClickListener(GoogleMap.OnMapClickListener mapClickListener) {
+        if (googleMap != null) {
+            googleMap.setOnMapClickListener(mapClickListener);
+        }
+    }
+
+    @Nullable
+    public UiSettings getUiSettings() {
+        if (googleMap != null) {
+            return googleMap.getUiSettings();
+        }
+        return null;
+    }
     //endregion
 
     private void showVehicleInfo() {

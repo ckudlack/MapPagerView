@@ -93,10 +93,8 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         mapPagerView = ButterKnife.findById(view, R.id.map_pager);
         mapPagerView.setAdapter(new MyViewPagerAdapter());
 
-        // Add backing list
-        mapPagerView.onCreate(null); // savedInstanceState crashes this sometimes
-        mapPagerView.initialize(getPhoneHeight(getActivity()), this);
-        mapPagerView.getMapAsync();
+        mapPagerView.onCreate(null, getPhoneHeight(getActivity())); // savedInstanceState crashes this sometimes
+        mapPagerView.getMapAsync(this);
     }
 
     @Override
