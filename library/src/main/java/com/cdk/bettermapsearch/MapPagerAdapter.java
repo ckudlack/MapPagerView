@@ -5,7 +5,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cdk.bettermapsearch.clustering.MapClusterItem;
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.ViewCreatedCallback;
 import com.google.android.gms.maps.model.LatLng;
 

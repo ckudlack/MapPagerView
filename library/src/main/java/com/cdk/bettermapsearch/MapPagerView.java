@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.cdk.bettermapsearch.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
-import com.cdk.bettermapsearch.clustering.MapClusterItem;
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -421,7 +421,8 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     public void updateMapItems(List<T> clusterItems) {
         for (int i = 0; i < clusterItems.size(); i++) {
             // set up each cluster item with the information it needs
-            clusterItems.get(i).initialize(i);
+            clusterItems.get(i).setIndex(i);
+            clusterItems.get(i).setupPositionFromLatAndLon();
         }
 
         clusterManager.addItems(clusterItems);

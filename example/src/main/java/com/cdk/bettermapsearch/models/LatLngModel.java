@@ -1,27 +1,47 @@
 package com.cdk.bettermapsearch.models;
 
-import com.cdk.bettermapsearch.clustering.MapClusterItem;
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
+import com.google.android.gms.maps.model.LatLng;
 
 /*
     Test model representing what you might get from the server
  */
-public class LatLngModel extends MapClusterItem {
+public class LatLngModel implements MapClusterItem {
 
     private String title;
     private int price;
+    private double latitude;
+    private double longitude;
+    private LatLng position;
+    private int index;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MapClusterItem that = (MapClusterItem) o;
-        return position.equals(that.getPosition());
-
+    public LatLng getPosition() {
+        return position;
     }
 
     @Override
-    public int hashCode() {
-        return position.hashCode();
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getSnippet() {
+        return null;
+    }
+
+    @Override
+    public int getIndex() {
+        return index;
+    }
+
+    @Override
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public void setupPositionFromLatAndLon() {
+        position = new LatLng(latitude, longitude);
     }
 }

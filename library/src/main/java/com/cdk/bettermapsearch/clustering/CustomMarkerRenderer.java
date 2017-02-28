@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -50,7 +51,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         T selectedItem = itemCallback.getSelectedItem();
         if (selectedItem != null) {
             for (T clusterItem : cluster.getItems()) {
-                if (clusterItem.equals(selectedItem)) {
+                if (itemsAreEqual(clusterItem, selectedItem)) {
                     clusterContainsSelectedItem = true;
                     break;
                 }
@@ -75,7 +76,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
-        if (itemCallback.getSelectedItem() != null && itemCallback.getSelectedItem().equals(item)) {
+        if (itemCallback.getSelectedItem() != null && itemsAreEqual(itemCallback.getSelectedItem(), item)) {
             previousClusterItem = item;
             setupClusterItemView(item, colorNormal);
             iconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
@@ -91,7 +92,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     @Override
     protected void onClusterItemRendered(T clusterItem, Marker marker) {
         super.onClusterItemRendered(clusterItem, marker);
-        if (itemCallback.getSelectedItem() != null && itemCallback.getSelectedItem().equals(clusterItem)) {
+        if (itemCallback.getSelectedItem() != null && itemsAreEqual(itemCallback.getSelectedItem(), clusterItem)) {
             marker.showInfoWindow();
         }
     }
@@ -110,7 +111,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         for (Marker m : markers) {
             Cluster<T> cluster = getCluster(m);
             for (T clusterItem : cluster.getItems()) {
-                if (clusterItem.equals(item)) {
+                if (itemsAreEqual(clusterItem, item)) {
                     // we have a live one
                     if (previousCluster == null || !previousCluster.equals(cluster)) {
                         renderClusterAsSelected(m, cluster);
@@ -124,7 +125,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     public boolean clusterContainsItem(Cluster<T> cluster, T item) {
         for (T clusterItem : cluster.getItems()) {
-            if (clusterItem.equals(item)) {
+            if (itemsAreEqual(clusterItem, item)) {
                 return true;
             }
         }
@@ -161,7 +162,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
             marker.showInfoWindow();
 
-            if (previousClusterItem != null && !previousClusterItem.equals(item)) {
+            if (previousClusterItem != null && !itemsAreEqual(previousClusterItem, item)) {
                 renderPreviousClusterItemAsUnselected();
             }
             if (previousCluster != null) {
@@ -216,6 +217,18 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     public void setItemCallback(SelectedItemCallback<T> itemCallback) {
         this.itemCallback = itemCallback;
+    }
+
+    private boolean itemsAreEqual(MapClusterItem item1, MapClusterItem item2) {
+        if (item1 == null && item2 == null) {
+            return true;
+        }
+
+        if (item1 == null || item2 == null) {
+            return false;
+        }
+
+        return item1.getPosition().equals(item2.getPosition());
     }
 
     // TODO: Might not need the colorRes argument

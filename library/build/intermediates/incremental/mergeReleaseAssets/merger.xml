@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/chris/Desktop/Projects/BetterMapSearch/library/src/main/assets"><file name="sample_locations.json" path="/Users/chris/Desktop/Projects/BetterMapSearch/library/src/main/assets/sample_locations.json"/></source><source path="/Users/chris/Desktop/Projects/BetterMapSearch/library/build/generated/assets/shaders/release"/></dataSet><dataSet config="release"><source path="/Users/chris/Desktop/Projects/BetterMapSearch/library/src/release/assets"/></dataSet></merger>
