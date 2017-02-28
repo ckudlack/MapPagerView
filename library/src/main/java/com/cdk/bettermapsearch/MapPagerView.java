@@ -54,6 +54,8 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         ClusterManager.OnClusterItemInfoWindowClickListener<T>,
         SelectedItemCallback<T> {
 
+    public static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
+
     public MapPagerView(Context context) {
         super(context);
         initialize();
@@ -221,7 +223,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         mapView.onCreate(savedInstanceState);
 
         this.phoneHeight = phoneHeight;
-        viewPager.getLayoutParams().height = (int) (phoneHeight * 0.25);
+        viewPager.getLayoutParams().height = (int) (phoneHeight * DEFAULT_VIEW_PAGER_HEIGHT_PERCENT);
     }
 
     public void getMapAsync(MapReadyCallback<T> callback) {
@@ -442,6 +444,14 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
             progressBar.progressiveStop();
         }
         this.loading = loading;
+    }
+
+    public void setViewPagerLeftRightPadding(int padding) {
+        viewPager.setPadding(padding, viewPager.getPaddingTop(), padding, viewPager.getPaddingBottom());
+    }
+
+    public void setViewPagerHeightPercent(double percent) {
+        viewPager.getLayoutParams().height = (int) (phoneHeight * percent);
     }
 
     @Override
