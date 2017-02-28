@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
@@ -85,6 +86,13 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private Subscription viewSubscriber;
     private boolean loading = false;
 
+    private GoogleMap.OnMapClickListener customMapClickListener;
+    private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
+    private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
+    private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
+    private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
+    private GoogleMap.OnCameraIdleListener customCameraIdleListener;
+
     private void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
         mapView = (MapView) findViewById(R.id.map);
@@ -124,19 +132,21 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         // Do some map stuff
-        clusterManager = new CachedClusterManager<>(getContext(), googleMap);
+        clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setItemCallback(this);
         clusterManager.setRenderer(markerRenderer);
 
-        clusterManager.setOnClusterClickListener(this);
+        clusterManager.setOnClusterClickListener(customClusterItemClickListener == null ? this : customClusterClickListener);
         clusterManager.setOnClusterInfoWindowClickListener(this);
-        clusterManager.setOnClusterItemClickListener(this);
+        clusterManager.setOnClusterItemClickListener(customClusterItemClickListener == null ? this : customClusterItemClickListener);
         clusterManager.setOnClusterItemInfoWindowClickListener(this);
 
         googleMap.setOnMarkerClickListener(clusterManager);
         googleMap.setOnCameraIdleListener(clusterManager);
-        googleMap.setOnMapClickListener(this);
+        googleMap.setOnMapClickListener(customMapClickListener == null ? this : customMapClickListener);
+        googleMap.setInfoWindowAdapter(customInfoWindowAdapter == null ? this : customInfoWindowAdapter);
+        googleMap.setOnInfoWindowClickListener(customInfoWindowClickListener == null ? this : customInfoWindowClickListener);
 
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setIndoorLevelPickerEnabled(false);
@@ -189,7 +199,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
         if (viewPager.getVisibility() != View.VISIBLE) {
             // This is to give the fragments some time to build their views
-            showVehicleInfo();
+            showViewPager();
         } else {
             viewPager.scrollToPosition(currentlySelectedItem.getIndex());
         }
@@ -249,6 +259,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     public void onDestroy() {
         mapView.onDestroy();
+        viewPager.removeOnPageChangedListener(this);
     }
 
     public void onLowMemory() {
@@ -260,22 +271,29 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     //region override callbacks
 
     public void setOnInfoWindowClickListener(GoogleMap.OnInfoWindowClickListener listener) {
-        if (googleMap != null) {
-            googleMap.setOnInfoWindowClickListener(listener);
-        }
+        customInfoWindowClickListener = listener;
     }
 
     public void setInfoWindowAdapter(GoogleMap.InfoWindowAdapter windowAdapter) {
-        if (googleMap != null) {
-            googleMap.setInfoWindowAdapter(windowAdapter);
-        }
+        customInfoWindowAdapter = windowAdapter;
     }
 
     public void setOnMapClickListener(GoogleMap.OnMapClickListener mapClickListener) {
-        if (googleMap != null) {
-            googleMap.setOnMapClickListener(mapClickListener);
-        }
+        this.customMapClickListener = mapClickListener;
     }
+
+    public void setOnClusterClickListener(ClusterManager.OnClusterClickListener<T> clusterClickListener) {
+        this.customClusterClickListener = clusterClickListener;
+    }
+
+    public void setOnClusterItemClickListener(ClusterManager.OnClusterItemClickListener<T> clusterItemClickListener) {
+        this.customClusterItemClickListener = clusterItemClickListener;
+    }
+
+    public void setCameraIdleListener(GoogleMap.OnCameraIdleListener cameraIdleListener) {
+        this.customCameraIdleListener = cameraIdleListener;
+    }
+    //endregion
 
     @Nullable
     public UiSettings getUiSettings() {
@@ -284,9 +302,8 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         }
         return null;
     }
-    //endregion
 
-    private void showVehicleInfo() {
+    public void showViewPager() {
         pagerAdapter.clearCallbacks();
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
@@ -318,17 +335,17 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
                         @Override
                         public void onNext(Object ignored) {
                             pagerAdapter.clearCallbacks();
-                            showViewPager();
+                            animateViewPagerVisible();
                         }
                     });
         } else {
-            showViewPager();
+            animateViewPagerVisible();
         }
 
         viewPager.scrollToPosition(currentlySelectedItem.getIndex());
     }
 
-    private void dismissViewPager() {
+    public void dismissViewPager() {
         if (viewPager.getVisibility() == View.VISIBLE) {
             int pos = viewPager.getCurrentPosition();
 
@@ -373,7 +390,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         currentlySelectedItem = null;
     }
 
-    private void showViewPager() {
+    private void animateViewPagerVisible() {
         viewPager.setVisibility(View.VISIBLE);
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
@@ -421,10 +438,12 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @SuppressWarnings("unchecked")
     public void updateMapItems(List<T> clusterItems) {
+        clusterManager.clearItems();
+
         for (int i = 0; i < clusterItems.size(); i++) {
             // set up each cluster item with the information it needs
             clusterItems.get(i).setIndex(i);
-            clusterItems.get(i).setupPositionFromLatAndLon();
+            clusterItems.get(i).buildPositionFromLatAndLon();
         }
 
         clusterManager.addItems(clusterItems);
@@ -446,6 +465,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         this.loading = loading;
     }
 
+    //region ViewPager customization
     public void setViewPagerLeftRightPadding(int padding) {
         viewPager.setPadding(padding, viewPager.getPaddingTop(), padding, viewPager.getPaddingBottom());
     }
@@ -453,6 +473,43 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     public void setViewPagerHeightPercent(double percent) {
         viewPager.getLayoutParams().height = (int) (phoneHeight * percent);
     }
+
+    public int getCurrentViewPagerPosition() {
+        return viewPager.getCurrentPosition();
+    }
+
+    public void scrollViewPagerToPosition(int position, boolean smoothScroll) {
+        if (smoothScroll) {
+            viewPager.smoothScrollToPosition(position);
+        } else {
+            viewPager.scrollToPosition(position);
+        }
+    }
+    //endregion
+
+    //region Google Map Customization
+    public LatLngBounds getMapBounds() {
+        return googleMap.getProjection().getVisibleRegion().latLngBounds;
+    }
+
+    public Marker addMarker(MarkerOptions markerOptions) {
+        if (googleMap != null) {
+            return googleMap.addMarker(markerOptions);
+        }
+        return null;
+    }
+
+    public void moveCameraToBounds(LatLngBounds bounds, int padding) {
+        try {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding));
+        } catch (Exception ignored) {
+        }
+    }
+
+    public CameraPosition getCameraPosition() {
+        return googleMap.getCameraPosition();
+    }
+    //endregion
 
     @Override
     public T getSelectedItem() {

@@ -8,6 +8,6 @@ public interface MapClusterItem extends ClusterItem {
 
     void setIndex(int index);
 
-    void setupPositionFromLatAndLon();
+    void buildPositionFromLatAndLon();
 
 }

@@ -2,8 +2,6 @@ package com.cdk.bettermapsearch.clustering;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.ColorRes;
-import android.support.v4.content.ContextCompat;
 
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
@@ -21,23 +19,17 @@ import java.util.Collection;
 
 public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
-    private Context context;
-
-    private IconGenerator iconGenerator;
-    private IconGenerator clusterIconGenerator;
-    private Cluster<T> previousCluster;
-    private T previousClusterItem;
-
-    private int colorNormal;
-    private int colorActivated;
+    protected Context context;
+    protected IconGenerator iconGenerator;
+    protected IconGenerator clusterIconGenerator;
+    protected Cluster<T> previousCluster;
+    protected T previousClusterItem;
 
     private SelectedItemCallback<T> itemCallback;
 
-    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
+    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
-        this.colorNormal = colorNormal;
-        this.colorActivated = colorActivated;
 
         // Application context is used in MapsUtils sample app
         iconGenerator = new IconGenerator(context.getApplicationContext());
@@ -62,11 +54,11 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             previousClusterItem = selectedItem;
             previousCluster = cluster;
 
-            setupClusterView(cluster, colorActivated);
-            clusterIconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+            setupClusterView(cluster, true);
+            setClusterViewBackground(true);
         } else {
-            setupClusterView(cluster, colorNormal);
-            clusterIconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
+            setupClusterView(cluster, false);
+            setClusterViewBackground(false);
         }
 
 
@@ -78,11 +70,11 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
         if (itemCallback.getSelectedItem() != null && itemsAreEqual(itemCallback.getSelectedItem(), item)) {
             previousClusterItem = item;
-            setupClusterItemView(item, colorNormal);
-            iconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+            setupClusterItemView(item, true);
+            setClusterItemViewBackground(true);
         } else {
-            setupClusterItemView(item, colorActivated);
-            iconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
+            setupClusterItemView(item, false);
+            setClusterItemViewBackground(false);
         }
 
         Bitmap icon = iconGenerator.makeIcon();
@@ -133,9 +125,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     }
 
     private void renderClusterAsSelected(Marker m, Cluster<T> cluster) {
-        setupClusterView(cluster, colorNormal);
-
-        clusterIconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+        setupClusterView(cluster, true);
+        setClusterViewBackground(true);
 
         Bitmap icon = clusterIconGenerator.makeIcon();
         m.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -154,9 +145,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public boolean renderClusterItemAsSelected(T item) {
         Marker marker = getMarker(item);
         if (marker != null) {
-            setupClusterItemView(item, colorNormal);
-
-            iconGenerator.setColor(ContextCompat.getColor(context, colorActivated));
+            setupClusterItemView(item, true);
+            setClusterItemViewBackground(true);
 
             Bitmap icon = iconGenerator.makeIcon();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -181,9 +171,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public void renderPreviousClusterAsUnselected() {
         Marker marker = getMarker(previousCluster);
         if (marker != null) {
-            setupClusterView(previousCluster, colorActivated);
-
-            clusterIconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
+            setupClusterView(previousCluster, false);
+            setClusterViewBackground(false);
 
             Bitmap icon = clusterIconGenerator.makeIcon();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -193,9 +182,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public void renderPreviousClusterItemAsUnselected() {
         Marker marker = getMarker(previousClusterItem);
         if (marker != null) {
-            setupClusterItemView(previousClusterItem, colorActivated);
-
-            iconGenerator.setColor(ContextCompat.getColor(context, colorNormal));
+            setupClusterItemView(previousClusterItem, false);
+            setClusterItemViewBackground(false);
 
             Bitmap icon = iconGenerator.makeIcon();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -205,14 +193,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public void unselectAllItems() {
         renderPreviousClusterAsUnselected();
         renderPreviousClusterItemAsUnselected();
-    }
-
-    public void setColorActivated(int colorActivated) {
-        this.colorActivated = colorActivated;
-    }
-
-    public void setColorNormal(int colorNormal) {
-        this.colorNormal = colorNormal;
     }
 
     public void setItemCallback(SelectedItemCallback<T> itemCallback) {
@@ -231,8 +211,11 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         return item1.getPosition().equals(item2.getPosition());
     }
 
-    // TODO: Might not need the colorRes argument
-    public abstract void setupClusterView(Cluster<T> cluster, @ColorRes int colorRes);
+    public abstract void setupClusterView(Cluster<T> cluster, boolean isSelected);
 
-    public abstract void setupClusterItemView(T item, @ColorRes int colorRes);
+    public abstract void setupClusterItemView(T item, boolean isSelected);
+
+    public abstract void setClusterViewBackground(boolean isSelected);
+
+    public abstract void setClusterItemViewBackground(boolean isSelected);
 }

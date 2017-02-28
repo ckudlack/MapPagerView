@@ -1,6 +1,7 @@
 package com.cdk.bettermapsearch.clustering;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -15,9 +16,11 @@ import java.util.List;
 public class CachedClusterManager<T extends ClusterItem> extends ClusterManager<T> {
 
     private List<T> items = new ArrayList<>();
+    private @Nullable GoogleMap.OnCameraIdleListener cameraIdleListener;
 
-    public CachedClusterManager(Context context, GoogleMap map) {
+    public CachedClusterManager(Context context, GoogleMap map, @Nullable GoogleMap.OnCameraIdleListener cameraIdleListener) {
         super(context, map);
+        this.cameraIdleListener = cameraIdleListener;
     }
 
     @Override
@@ -41,8 +44,15 @@ public class CachedClusterManager<T extends ClusterItem> extends ClusterManager<
     @Override
     public void addItems(Collection<T> items) {
         super.addItems(items);
-        this.items.clear();
         this.items.addAll(items);
+    }
+
+    @Override
+    public void onCameraIdle() {
+        super.onCameraIdle();
+        if (cameraIdleListener != null) {
+            cameraIdleListener.onCameraIdle();
+        }
     }
 
     public T getClusterItem(int position) {

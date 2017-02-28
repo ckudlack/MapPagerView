@@ -154,16 +154,26 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
     public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
 
         public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
-            super(context, map, clusterManager, colorNormal, colorActivated);
+            super(context, map, clusterManager);
         }
 
         @Override
-        public void setupClusterView(Cluster<LatLngModel> cluster, @ColorRes int colorRes) {
+        public void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
 
         }
 
         @Override
-        public void setupClusterItemView(LatLngModel item, @ColorRes int colorRes) {
+        public void setupClusterItemView(LatLngModel item, boolean isSelected) {
+
+        }
+
+        @Override
+        public void setClusterViewBackground(boolean isSelected) {
+
+        }
+
+        @Override
+        public void setClusterItemViewBackground(boolean isSelected) {
 
         }
     }

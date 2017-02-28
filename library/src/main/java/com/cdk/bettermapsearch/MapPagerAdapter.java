@@ -64,4 +64,8 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         this.backingList.clear();
         this.backingList.addAll(items);
     }
+
+    public LT getItemAtPosition(int position) {
+        return backingList.get(position);
+    }
 }
