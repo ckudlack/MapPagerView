@@ -27,7 +27,11 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 * The abstract class `MapPagerAdapter` controls the ViewPager logic, it requires 2 types: your data model class and the ViewHolder type
 * Obviously you'll also need to create your own ViewHolder
 
-TODO: 
+##Related Links
+* [Google MapsUtils](https://developers.google.com/maps/documentation/android-api/utility/)
+* [RecyclerViewPager](https://github.com/lsjwzh/RecyclerViewPager)
+
+###TODO: 
 - Build out example more
 - Make clustering optional
 - Replace Observable.create() with RxRelay
