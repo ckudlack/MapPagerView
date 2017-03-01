@@ -76,8 +76,8 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private RecyclerViewPager viewPager;
     private SmoothProgressBar progressBar;
 
-    private CachedClusterManager<T> clusterManager;
-    private GoogleMap googleMap;
+    @Nullable private CachedClusterManager<T> clusterManager;
+    @Nullable private GoogleMap googleMap;
     private T currentlySelectedItem;
     private MapPagerAdapter pagerAdapter;
     private int phoneHeight;
@@ -86,12 +86,12 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private Subscription viewSubscriber;
     private boolean loading = false;
 
-    private GoogleMap.OnMapClickListener customMapClickListener;
-    private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
-    private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
-    private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
-    private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
-    private GoogleMap.OnCameraIdleListener customCameraIdleListener;
+    @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
+    @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
+    @Nullable private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
+    @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
+    @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
+    @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
 
     private void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
@@ -176,11 +176,13 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         final LatLngBounds bounds = builder.build();
 
         // Animate camera to the bounds
-        try {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
-        } catch (IllegalStateException e) {
-            // Screen size is too small, get rid of padding
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+        if (googleMap != null) {
+            try {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
+            } catch (IllegalStateException e) {
+                // Screen size is too small, get rid of padding
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
+            }
         }
 
         return true;
@@ -215,6 +217,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @Override
     public void OnPageChanged(int size, int pos) {
+        if (googleMap == null || clusterManager == null) {
+            return;
+        }
+
         T clusterItem = clusterManager.getClusterItem(pos);
 
         if (!markerRenderer.renderClusterItemAsSelected(clusterItem)) {
@@ -438,6 +444,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @SuppressWarnings("unchecked")
     public void updateMapItems(List<T> clusterItems) {
+        if (clusterManager == null) {
+            return;
+        }
+
         clusterManager.clearItems();
 
         for (int i = 0; i < clusterItems.size(); i++) {
@@ -488,10 +498,16 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     //endregion
 
     //region Google Map Customization
+
+    @Nullable
     public LatLngBounds getMapBounds() {
-        return googleMap.getProjection().getVisibleRegion().latLngBounds;
+        if (googleMap != null) {
+            return googleMap.getProjection().getVisibleRegion().latLngBounds;
+        }
+        return null;
     }
 
+    @Nullable
     public Marker addMarker(MarkerOptions markerOptions) {
         if (googleMap != null) {
             return googleMap.addMarker(markerOptions);
@@ -501,17 +517,24 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     public void moveCameraToBounds(LatLngBounds bounds, int padding) {
         try {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding));
+            if (googleMap != null) {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding));
+            }
         } catch (Exception ignored) {
         }
     }
 
+    @Nullable
     public CameraPosition getCameraPosition() {
-        return googleMap.getCameraPosition();
+        if (googleMap != null) {
+            return googleMap.getCameraPosition();
+        }
+        return null;
     }
     //endregion
 
     @Override
+    @Nullable
     public T getSelectedItem() {
         return currentlySelectedItem;
     }
