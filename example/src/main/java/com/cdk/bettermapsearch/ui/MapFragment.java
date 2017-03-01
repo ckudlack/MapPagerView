@@ -3,7 +3,6 @@ package com.cdk.bettermapsearch.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -146,14 +145,14 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
         mapPagerView.updateMapItems(items);
 
-        return new MyMarkerRenderer(getContext(), googleMap, clusterManager, android.R.color.white, android.R.color.black);
+        return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
     }
 
     //region test classes
 
     public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
 
-        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager, @ColorRes int colorNormal, @ColorRes int colorActivated) {
+        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager) {
             super(context, map, clusterManager);
         }
 

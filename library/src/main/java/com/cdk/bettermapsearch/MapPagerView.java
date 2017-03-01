@@ -72,6 +72,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         initialize();
     }
 
+    //region variables
     private MapView mapView;
     private RecyclerViewPager viewPager;
     private SmoothProgressBar progressBar;
@@ -79,9 +80,9 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     @Nullable private CachedClusterManager<T> clusterManager;
     @Nullable private GoogleMap googleMap;
     private T currentlySelectedItem;
-    private MapPagerAdapter pagerAdapter;
+    @Nullable private MapPagerAdapter pagerAdapter;
     private int phoneHeight;
-    private CustomMarkerRenderer<T> markerRenderer;
+    @Nullable private CustomMarkerRenderer<T> markerRenderer;
     private MapReadyCallback<T> mapReadyCallback;
     private Subscription viewSubscriber;
     private boolean loading = false;
@@ -92,6 +93,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
     @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
     @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
+    //endregion
 
     private void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
@@ -125,7 +127,9 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     @Override
     public void onMapClick(LatLng latLng) {
         dismissViewPager();
-        markerRenderer.unselectAllItems();
+        if (markerRenderer != null) {
+            markerRenderer.unselectAllItems();
+        }
     }
 
     @Override
@@ -156,6 +160,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @Override
     public boolean onClusterClick(Cluster<T> cluster) {
+        if (markerRenderer == null) {
+            return true;
+        }
+
         if (currentlySelectedItem != null && markerRenderer.clusterContainsItem(cluster, currentlySelectedItem)) {
             markerRenderer.renderPreviousClusterAsUnselected();
         } else {
@@ -195,6 +203,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @Override
     public boolean onClusterItemClick(T clusterItem) {
+        if (markerRenderer == null) {
+            return false;
+        }
+
         markerRenderer.renderClusterItemAsSelected(clusterItem);
 
         currentlySelectedItem = clusterItem;
@@ -217,7 +229,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @Override
     public void OnPageChanged(int size, int pos) {
-        if (googleMap == null || clusterManager == null) {
+        if (googleMap == null || clusterManager == null || markerRenderer == null || pagerAdapter == null) {
             return;
         }
 
@@ -310,6 +322,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     }
 
     public void showViewPager() {
+        if (pagerAdapter == null) {
+            return;
+        }
+
         pagerAdapter.clearCallbacks();
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
@@ -352,6 +368,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     }
 
     public void dismissViewPager() {
+        if (pagerAdapter == null) {
+            return;
+        }
+
         if (viewPager.getVisibility() == View.VISIBLE) {
             int pos = viewPager.getCurrentPosition();
 
@@ -397,6 +417,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     }
 
     private void animateViewPagerVisible() {
+        if (pagerAdapter == null) {
+            return;
+        }
+
         viewPager.setVisibility(View.VISIBLE);
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
@@ -444,7 +468,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
     @SuppressWarnings("unchecked")
     public void updateMapItems(List<T> clusterItems) {
-        if (clusterManager == null) {
+        if (clusterManager == null || pagerAdapter == null) {
             return;
         }
 
@@ -530,6 +554,15 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
             return googleMap.getCameraPosition();
         }
         return null;
+    }
+    //endregion
+
+    //region cluster customization
+    public void setClusteringEnabled(boolean enabled) {
+        // 4 is the default that the MapsUtils library uses
+        if (markerRenderer != null) {
+            markerRenderer.setMinClusterSize(enabled ? 4 : 1);
+        }
     }
     //endregion
 
