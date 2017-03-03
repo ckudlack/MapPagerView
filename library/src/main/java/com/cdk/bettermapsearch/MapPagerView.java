@@ -86,6 +86,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private MapReadyCallback<T> mapReadyCallback;
     private Subscription viewSubscriber;
     private boolean loading = false;
+    private boolean clusteringEnabled = true;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
@@ -139,6 +140,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setItemCallback(this);
+        setClusteringEnabled(clusteringEnabled);
         clusterManager.setRenderer(markerRenderer);
 
         clusterManager.setOnClusterClickListener(customClusterItemClickListener == null ? this : customClusterClickListener);
@@ -560,8 +562,9 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     //region cluster customization
     public void setClusteringEnabled(boolean enabled) {
         // 4 is the default that the MapsUtils library uses
+        clusteringEnabled = enabled;
         if (markerRenderer != null) {
-            markerRenderer.setMinClusterSize(enabled ? 4 : 1);
+            markerRenderer.setClusteringEnabled(clusteringEnabled);
         }
     }
     //endregion

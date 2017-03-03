@@ -20,11 +20,12 @@ import java.util.Collection;
 public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
     protected Context context;
-    protected IconGenerator iconGenerator;
+    protected IconGenerator clusterItemIconGenerator;
     protected IconGenerator clusterIconGenerator;
     protected Cluster<T> previousCluster;
     protected T previousClusterItem;
 
+    private boolean clusteringEnabled = true;
     private SelectedItemCallback<T> itemCallback;
 
     public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
@@ -32,7 +33,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         this.context = context;
 
         // Application context is used in MapsUtils sample app
-        iconGenerator = new IconGenerator(context.getApplicationContext());
+        clusterItemIconGenerator = new IconGenerator(context.getApplicationContext());
         clusterIconGenerator = new IconGenerator(context.getApplicationContext());
     }
 
@@ -77,7 +78,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             setClusterItemViewBackground(false);
         }
 
-        Bitmap icon = iconGenerator.makeIcon();
+        Bitmap icon = clusterItemIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
     }
 
@@ -98,6 +99,14 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         }
     }
 
+    @Override
+    protected boolean shouldRenderAsCluster(Cluster<T> cluster) {
+        return clusteringEnabled && super.shouldRenderAsCluster(cluster);
+    }
+
+    public void setClusteringEnabled(boolean clusteringEnabled) {
+        this.clusteringEnabled = clusteringEnabled;
+    }
 
     public LatLng getClusterMarker(Collection<Marker> markers, T item) {
         for (Marker m : markers) {
@@ -148,7 +157,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             setupClusterItemView(item, true);
             setClusterItemViewBackground(true);
 
-            Bitmap icon = iconGenerator.makeIcon();
+            Bitmap icon = clusterItemIconGenerator.makeIcon();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
             marker.showInfoWindow();
 
@@ -185,7 +194,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             setupClusterItemView(previousClusterItem, false);
             setClusterItemViewBackground(false);
 
-            Bitmap icon = iconGenerator.makeIcon();
+            Bitmap icon = clusterItemIconGenerator.makeIcon();
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
         }
     }
