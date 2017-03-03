@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -21,7 +22,9 @@ import com.cdk.bettermapsearch.example.R;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.models.ItemModel;
 import com.cdk.bettermapsearch.models.LatLngModel;
+import com.cdk.bettermapsearch.util.FileUtils;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -31,39 +34,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 public class MapFragment extends Fragment implements MapReadyCallback<LatLngModel> {
-
-    private static final String items = "{\n" +
-            "  \"items\": [\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78837800000000157751856022514402866363525390625,\n" +
-            "      \"longitude\": -122.4754750000000029785951483063399791717529296875\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78863199999999977762854541651904582977294921875,\n" +
-            "      \"longitude\": -122.4747550000000018144419300369918346405029296875\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78774200000000149657353176735341548919677734375,\n" +
-            "      \"longitude\": -122.4743959999999987076080287806689739227294921875\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78620399999999790452420711517333984375,\n" +
-            "      \"longitude\": -122.4811040000000019745129975490272045135498046875\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78854100000000215686668525449931621551513671875,\n" +
-            "      \"longitude\": -122.4758340000000060854290495626628398895263671875\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.78846800000000172303771250881254673004150390625,\n" +
-            "      \"longitude\": -122.47525799999999662759364582598209381103515625\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"latitude\": 37.7872210000000023910615709610283374786376953125,\n" +
-            "      \"longitude\": -122.474703000000005204128683544695377349853515625\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
 
     public MapFragment() {
         // Required empty public constructor
@@ -140,40 +110,69 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
     @Override
     public CustomMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, CachedClusterManager<LatLngModel> clusterManager) {
-        final ItemModel itemModel = new Gson().fromJson(items, ItemModel.class);
+        String json = null;
+        try {
+            json = FileUtils.getStringFromFile(getContext(), "sample_locations.json");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final ItemModel itemModel = new Gson().fromJson(json, ItemModel.class);
+
         final List<LatLngModel> items = itemModel.getItems();
 
         mapPagerView.updateMapItems(items);
+        mapPagerView.moveCameraToBounds(createBoundsFromList(items), 100);
 
         return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
     }
 
-    //region test classes
+    private LatLngBounds createBoundsFromList(List<LatLngModel> items) {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLngModel item : items) {
+            boundsBuilder.include(item.getPosition());
+        }
+        return boundsBuilder.build();
+    }
+
+    //region example classes
 
     public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
 
+        private TextView clusterText;
+        private TextView clusterItemText;
+
         public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager) {
             super(context, map, clusterManager);
+
+            View clusterView = View.inflate(context, R.layout.cluster_view, null);
+            clusterText = (TextView) clusterView.findViewById(R.id.text_primary);
+            clusterItemText = (TextView) View.inflate(context, R.layout.cluster_item_view, null);
+
+            clusterIconGenerator.setContentView(clusterView);
+            clusterItemIconGenerator.setContentView(clusterItemText);
         }
 
         @Override
         public void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
-
+            clusterText.setText(context.getResources().getString(R.string.cluster_text, cluster.getItems().size()));
+            clusterText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
         public void setupClusterItemView(LatLngModel item, boolean isSelected) {
-
+            clusterItemText.setText(context.getResources().getString(R.string.cluster_item_text, item.getIndex()));
+            clusterItemText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
         public void setClusterViewBackground(boolean isSelected) {
-
+            clusterIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
         }
 
         @Override
         public void setClusterItemViewBackground(boolean isSelected) {
-
+            clusterItemIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
         }
     }
 
