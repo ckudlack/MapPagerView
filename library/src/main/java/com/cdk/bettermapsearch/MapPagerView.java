@@ -2,6 +2,7 @@ package com.cdk.bettermapsearch;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -546,7 +547,9 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
             if (googleMap != null) {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding));
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            // In case the map initialization is not quite there yet
+            new Handler().postDelayed(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding)), 500);
         }
     }
 
