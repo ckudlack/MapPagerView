@@ -88,6 +88,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private Subscription viewSubscriber;
     private boolean loading = false;
     private boolean clusteringEnabled = true;
+    private int minClusterSize = 4;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
@@ -106,7 +107,6 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         viewPager.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         viewPager.addOnPageChangedListener(this);
         viewPager.setHasFixedSize(true);
-        progressBar.progressiveStop();
     }
 
     //region Map and clustering callbacks
@@ -141,6 +141,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setItemCallback(this);
+        markerRenderer.setMinClusterSize(minClusterSize);
         setClusteringEnabled(clusteringEnabled);
         clusterManager.setRenderer(markerRenderer);
 
@@ -254,7 +255,6 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         mapView.onCreate(savedInstanceState);
 
         this.phoneHeight = phoneHeight;
-        viewPager.getLayoutParams().height = (int) (phoneHeight * DEFAULT_VIEW_PAGER_HEIGHT_PERCENT);
     }
 
     public void getMapAsync(MapReadyCallback<T> callback) {
@@ -487,7 +487,6 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         clusterManager.cluster();
 
         pagerAdapter.updateItems(clusterItems);
-        setLoadingIndicator(false);
     }
 
     public void setLoadingIndicator(boolean loading) {
@@ -503,8 +502,8 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     }
 
     //region ViewPager customization
-    public void setViewPagerLeftRightPadding(int padding) {
-        viewPager.setPadding(padding, viewPager.getPaddingTop(), padding, viewPager.getPaddingBottom());
+    public void setViewPagerPadding(int left, int top, int right, int bottom) {
+        viewPager.setPadding(left, top, right, bottom);
     }
 
     public void setViewPagerHeightPercent(double percent) {
@@ -569,6 +568,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         if (markerRenderer != null) {
             markerRenderer.setClusteringEnabled(clusteringEnabled);
         }
+    }
+
+    public void setMinClusterSize(int size) {
+        this.minClusterSize = size;
     }
     //endregion
 

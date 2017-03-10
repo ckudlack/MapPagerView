@@ -29,7 +29,7 @@
     <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:clipToPadding="false"
         android:paddingLeft="70dp"
