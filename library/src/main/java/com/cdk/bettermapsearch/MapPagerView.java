@@ -13,7 +13,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.cdk.bettermapsearch.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
@@ -44,7 +44,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class MapPagerView<T extends MapClusterItem> extends RelativeLayout implements
+public class MapPagerView<T extends MapClusterItem> extends FrameLayout implements
         OnMapReadyCallback,
         GoogleMap.InfoWindowAdapter,
         GoogleMap.OnMapClickListener,
@@ -57,6 +57,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         SelectedItemCallback<T> {
 
     public static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
+    private static final int DEFAULT_MAP_CAMERA_ANIMATION_SPEED = 200;
 
     public MapPagerView(Context context) {
         super(context);
@@ -89,6 +90,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
     private boolean loading = false;
     private boolean clusteringEnabled = true;
     private int minClusterSize = 4;
+    private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
@@ -190,7 +192,7 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
         // Animate camera to the bounds
         if (googleMap != null) {
             try {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 300));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapCameraAnimationSpeed));
             } catch (IllegalStateException e) {
                 // Screen size is too small, get rid of padding
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
@@ -241,9 +243,9 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
 
         if (!markerRenderer.renderClusterItemAsSelected(clusterItem)) {
             LatLng clusterPosition = markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem);
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(clusterPosition, googleMap.getCameraPosition().zoom)), 400, null);
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(clusterPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
         } else {
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(pagerAdapter.getItemPositionOnMap(pos), googleMap.getCameraPosition().zoom)), 400, null);
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(pagerAdapter.getItemPositionOnMap(pos), googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
         }
 
         currentlySelectedItem = clusterItem;
@@ -550,6 +552,10 @@ public class MapPagerView<T extends MapClusterItem> extends RelativeLayout imple
             // In case the map initialization is not quite there yet
             new Handler().postDelayed(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding)), 500);
         }
+    }
+
+    public void setMapCameraAnimationSpeed(int cameraAnimationSpeed) {
+        this.mapCameraAnimationSpeed = cameraAnimationSpeed;
     }
 
     @Nullable
