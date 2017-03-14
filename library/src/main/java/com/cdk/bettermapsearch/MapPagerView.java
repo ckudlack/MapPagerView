@@ -38,7 +38,6 @@ import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -77,7 +76,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     //region variables
     private MapView mapView;
     private RecyclerViewPager viewPager;
-    private SmoothProgressBar progressBar;
 
     @Nullable private CachedClusterManager<T> clusterManager;
     @Nullable private GoogleMap googleMap;
@@ -87,7 +85,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     @Nullable private CustomMarkerRenderer<T> markerRenderer;
     private MapReadyCallback<T> mapReadyCallback;
     private Subscription viewSubscriber;
-    private boolean loading = false;
     private boolean clusteringEnabled = true;
     private int minClusterSize = 4;
     private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
@@ -104,7 +101,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
         mapView = (MapView) findViewById(R.id.map);
         viewPager = (RecyclerViewPager) findViewById(R.id.view_pager);
-        progressBar = (SmoothProgressBar) findViewById(R.id.progress);
 
         viewPager.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         viewPager.addOnPageChangedListener(this);
@@ -489,18 +485,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         clusterManager.cluster();
 
         pagerAdapter.updateItems(clusterItems);
-    }
-
-    public void setLoadingIndicator(boolean loading) {
-        if (loading == this.loading) {
-            return;
-        }
-        if (loading) {
-            progressBar.progressiveStart();
-        } else {
-            progressBar.progressiveStop();
-        }
-        this.loading = loading;
     }
 
     //region ViewPager customization
