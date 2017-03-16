@@ -1,14 +1,11 @@
 package com.cdk.bettermapsearch.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +27,6 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
-
-import butterknife.ButterKnife;
 
 public class MapFragment extends Fragment implements MapReadyCallback<LatLngModel> {
 
@@ -57,12 +52,12 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
 
-        mapPagerView = ButterKnife.findById(view, R.id.map_pager);
+        //noinspection unchecked
+        mapPagerView = (MapPagerView) view.findViewById(R.id.map_pager);
         mapPagerView.setAdapter(new MyViewPagerAdapter());
 
-        mapPagerView.onCreate(null, getPhoneHeight(getActivity())); // savedInstanceState crashes this sometimes
+        mapPagerView.onCreate(null); // savedInstanceState crashes this sometimes
         mapPagerView.getMapAsync(this);
     }
 
@@ -100,12 +95,6 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
     public void onLowMemory() {
         super.onLowMemory();
         mapPagerView.onLowMemory();
-    }
-
-    public int getPhoneHeight(@NonNull Activity context) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        context.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        return displayMetrics.heightPixels;
     }
 
     @Override
@@ -194,11 +183,9 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
-            holder.itemView.setY(0);
-            holder.itemView.setVisibility(View.VISIBLE);
+            super.onBindViewHolder(holder, position);
 
-            final LatLngModel latLngModel = backingList.get(position);
-
+            final LatLngModel latLngModel = getItemAtPosition(position);
             holder.title.setText("Item " + latLngModel.getIndex());
         }
 

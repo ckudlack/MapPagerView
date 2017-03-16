@@ -42,7 +42,7 @@ public class LatLngModel implements MapClusterItem {
     }
 
     @Override
-    public void buildPositionFromLatAndLon() {
+    public void buildPositionFromLatAndLng() {
         position = new LatLng(latitude, longitude);
     }
 

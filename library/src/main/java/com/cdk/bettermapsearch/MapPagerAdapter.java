@@ -1,5 +1,6 @@
 package com.cdk.bettermapsearch;
 
+import android.support.annotation.CallSuper;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    protected List<LT> backingList = new ArrayList<>();
+    private List<LT> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
 
     public MapPagerAdapter() {
@@ -25,9 +26,11 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         return null;
     }
 
+    @CallSuper
     @Override
     public void onBindViewHolder(VH holder, int position) {
-
+        holder.itemView.setY(0);
+        holder.itemView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -35,6 +38,7 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         return backingList.size();
     }
 
+    @CallSuper
     @Override
     public void onViewAttachedToWindow(VH holder) {
         super.onViewAttachedToWindow(holder);

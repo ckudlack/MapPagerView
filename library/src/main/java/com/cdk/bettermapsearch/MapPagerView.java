@@ -46,9 +46,7 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class MapPagerView<T extends MapClusterItem> extends FrameLayout implements
         OnMapReadyCallback,
-        GoogleMap.InfoWindowAdapter,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnInfoWindowClickListener,
         RecyclerViewPager.OnPageChangedListener,
         ClusterManager.OnClusterClickListener<T>,
         ClusterManager.OnClusterInfoWindowClickListener<T>,
@@ -56,9 +54,41 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         ClusterManager.OnClusterItemInfoWindowClickListener<T>,
         SelectedItemCallback<T> {
 
-    public static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
+    private static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
     private static final int DEFAULT_MAP_CAMERA_ANIMATION_SPEED = 200;
+    private static final int DEFAULT_CLUSTER_SIZE = 4;
 
+    //region variables
+    private MapView mapView;
+    private RecyclerViewPager viewPager;
+
+    @Nullable private GoogleMap googleMap;
+
+    @Nullable private MapPagerAdapter pagerAdapter;
+
+    private T currentlySelectedItem;
+
+    private MapReadyCallback<T> mapReadyCallback;
+
+    private Subscription viewSubscriber;
+
+    @Nullable private CustomMarkerRenderer<T> markerRenderer;
+    @Nullable private CachedClusterManager<T> clusterManager;
+    private boolean clusteringEnabled = true;
+    private int minClusterSize = DEFAULT_CLUSTER_SIZE;
+    private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
+
+    private NonHierarchicalDistanceBasedAlgorithm<T> algorithm;
+
+    @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
+    @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
+    @Nullable private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
+    @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
+    @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
+    @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
+    //endregion
+
+    // region constructors
     public MapPagerView(Context context) {
         super(context);
         initialize();
@@ -73,36 +103,12 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         super(context, attrs, defStyleAttr);
         initialize();
     }
-
-    //region variables
-    private MapView mapView;
-    private RecyclerViewPager viewPager;
-
-    @Nullable private CachedClusterManager<T> clusterManager;
-    @Nullable private GoogleMap googleMap;
-    private T currentlySelectedItem;
-    @Nullable private MapPagerAdapter pagerAdapter;
-    private int phoneHeight;
-    @Nullable private CustomMarkerRenderer<T> markerRenderer;
-    private MapReadyCallback<T> mapReadyCallback;
-    private Subscription viewSubscriber;
-    private boolean clusteringEnabled = true;
-    private int minClusterSize = 4;
-    private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
-    private NonHierarchicalDistanceBasedAlgorithm<T> algorithm;
-
-    @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
-    @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
-    @Nullable private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
-    @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
-    @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
-    @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
     //endregion
 
     private void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
-        mapView = (MapView) findViewById(R.id.map);
-        viewPager = (RecyclerViewPager) findViewById(R.id.view_pager);
+        mapView = (MapView) findViewById(R.id.map_view);
+        viewPager = (RecyclerViewPager) findViewById(R.id.map_view_pager);
 
         viewPager.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         viewPager.addOnPageChangedListener(this);
@@ -112,22 +118,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     }
 
     //region Map and clustering callbacks
-
-    @Override
-    public View getInfoWindow(Marker marker) {
-        return null;
-    }
-
-    @Override
-    public View getInfoContents(Marker marker) {
-        return null;
-    }
-
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        // no-op
-    }
-
     @Override
     public void onMapClick(LatLng latLng) {
         dismissViewPager();
@@ -156,8 +146,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         googleMap.setOnMarkerClickListener(clusterManager);
         googleMap.setOnCameraIdleListener(clusterManager);
         googleMap.setOnMapClickListener(customMapClickListener == null ? this : customMapClickListener);
-        googleMap.setInfoWindowAdapter(customInfoWindowAdapter == null ? this : customInfoWindowAdapter);
-        googleMap.setOnInfoWindowClickListener(customInfoWindowClickListener == null ? this : customInfoWindowClickListener);
+        googleMap.setInfoWindowAdapter(customInfoWindowAdapter);
+        googleMap.setOnInfoWindowClickListener(customInfoWindowClickListener);
 
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
         googleMap.getUiSettings().setIndoorLevelPickerEnabled(false);
@@ -235,19 +225,16 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     //endregion
 
     @Override
-    public void OnPageChanged(int size, int pos) {
+    public void OnPageChanged(int size, int position) {
         if (googleMap == null || clusterManager == null || markerRenderer == null || pagerAdapter == null) {
             return;
         }
 
-        T clusterItem = clusterManager.getClusterItem(pos);
+        T clusterItem = clusterManager.getClusterItem(position);
+        LatLng itemPosition;
 
-        if (!markerRenderer.renderClusterItemAsSelected(clusterItem)) {
-            LatLng clusterPosition = markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem);
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(clusterPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
-        } else {
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(pagerAdapter.getItemPositionOnMap(pos), googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
-        }
+        itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
 
         currentlySelectedItem = clusterItem;
         currentlySelectedItem.setIsViewed();
@@ -255,10 +242,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     //region wrappers for MapView lifecycle
 
-    public void onCreate(Bundle savedInstanceState, int phoneHeight) {
+    public void onCreate(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);
-
-        this.phoneHeight = phoneHeight;
     }
 
     public void getMapAsync(MapReadyCallback<T> callback) {
@@ -390,7 +375,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
                 if (holder != null) {
                     View view = holder.itemView;
 
-                    TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 0, phoneHeight);
+                    TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 0, mapView.getMeasuredHeight());
                     translateAnimation.setDuration(400);
                     translateAnimation.setInterpolator(new AccelerateInterpolator());
                     translateAnimation.setStartOffset(k * 50);
@@ -437,7 +422,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             RecyclerView.ViewHolder holder = viewPager.findViewHolderForAdapterPosition(i);
             final View itemView = holder.itemView;
 
-            TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, phoneHeight, 0);
+            TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, mapView.getMeasuredHeight(), 0);
             translateAnimation.setDuration(400);
             translateAnimation.setStartOffset(k * 50);
             translateAnimation.setInterpolator(new OvershootInterpolator(0.3f));
@@ -484,7 +469,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         for (int i = 0; i < clusterItems.size(); i++) {
             // set up each cluster item with the information it needs
             clusterItems.get(i).setIndex(i);
-            clusterItems.get(i).buildPositionFromLatAndLon();
+            clusterItems.get(i).buildPositionFromLatAndLng();
         }
 
         clusterManager.addItems(clusterItems);
@@ -499,7 +484,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     }
 
     public void setViewPagerHeightPercent(double percent) {
-        viewPager.getLayoutParams().height = (int) (phoneHeight * percent);
+        viewPager.getLayoutParams().height = (int) (mapView.getMeasuredHeight() * percent);
     }
 
     public int getCurrentViewPagerPosition() {
