@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     private boolean clusteringEnabled = true;
     private int minClusterSize = 4;
     private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
+    private NonHierarchicalDistanceBasedAlgorithm<T> algorithm;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
@@ -105,6 +107,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         viewPager.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         viewPager.addOnPageChangedListener(this);
         viewPager.setHasFixedSize(true);
+
+        algorithm = new NonHierarchicalDistanceBasedAlgorithm<>();
     }
 
     //region Map and clustering callbacks
@@ -137,6 +141,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         this.googleMap = googleMap;
         // Do some map stuff
         clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
+        clusterManager.setAlgorithm(algorithm);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setItemCallback(this);
         markerRenderer.setMinClusterSize(minClusterSize);
@@ -245,6 +250,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         }
 
         currentlySelectedItem = clusterItem;
+        currentlySelectedItem.setIsViewed();
     }
 
     //region wrappers for MapView lifecycle
@@ -562,6 +568,14 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     public void setMinClusterSize(int size) {
         this.minClusterSize = size;
+    }
+
+    public void setAlgorithm(NonHierarchicalDistanceBasedAlgorithm<T> algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public NonHierarchicalDistanceBasedAlgorithm<T> getAlgorithm() {
+        return algorithm;
     }
     //endregion
 

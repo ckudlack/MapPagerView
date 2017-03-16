@@ -10,4 +10,7 @@ public interface MapClusterItem extends ClusterItem {
 
     void buildPositionFromLatAndLon();
 
+    boolean isViewed();
+
+    void setIsViewed();
 }

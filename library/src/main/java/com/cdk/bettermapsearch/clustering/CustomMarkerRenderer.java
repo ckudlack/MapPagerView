@@ -2,6 +2,7 @@ package com.cdk.bettermapsearch.clustering;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
@@ -22,8 +23,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     protected Context context;
     protected IconGenerator clusterItemIconGenerator;
     protected IconGenerator clusterIconGenerator;
-    protected Cluster<T> previousCluster;
-    protected T previousClusterItem;
+    @Nullable protected Cluster<T> previousCluster;
+    @Nullable protected T previousClusterItem;
 
     private boolean clusteringEnabled = true;
     private SelectedItemCallback<T> itemCallback;
@@ -190,6 +191,9 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     public void renderPreviousClusterItemAsUnselected() {
         Marker marker = getMarker(previousClusterItem);
+        if (previousClusterItem != null) {
+            previousClusterItem.setIsViewed();
+        }
         if (marker != null) {
             setupClusterItemView(previousClusterItem, false);
             setClusterItemViewBackground(false);

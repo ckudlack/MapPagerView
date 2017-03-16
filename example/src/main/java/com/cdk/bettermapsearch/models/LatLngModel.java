@@ -14,6 +14,7 @@ public class LatLngModel implements MapClusterItem {
     private double longitude;
     private LatLng position;
     private int index;
+    private boolean isViewed = false;
 
     @Override
     public LatLng getPosition() {
@@ -43,5 +44,15 @@ public class LatLngModel implements MapClusterItem {
     @Override
     public void buildPositionFromLatAndLon() {
         position = new LatLng(latitude, longitude);
+    }
+
+    @Override
+    public boolean isViewed() {
+        return isViewed;
+    }
+
+    @Override
+    public void setIsViewed() {
+        isViewed = true;
     }
 }
