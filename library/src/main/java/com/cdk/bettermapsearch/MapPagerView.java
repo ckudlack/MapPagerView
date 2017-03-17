@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
+import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
@@ -44,6 +45,11 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
+/**
+ * This class encapsulates the MapView, ViewPager, and all the logic and callbacks related to linking the two
+ *
+ * @param <T> the class type of the items that will be displayed on the map and in the ViewPager
+ */
 public class MapPagerView<T extends MapClusterItem> extends FrameLayout implements
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
@@ -230,7 +236,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             return;
         }
 
-        T clusterItem = clusterManager.getClusterItem(position);
+        //noinspection unchecked
+        T clusterItem = (T) pagerAdapter.getItemAtPosition(position);
         LatLng itemPosition;
 
         itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
@@ -366,44 +373,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
         if (viewPager.getVisibility() == View.VISIBLE) {
             int pos = viewPager.getCurrentPosition();
-
-            int k = 0;
-            final int max = Math.min(pagerAdapter.getItemCount() - 1, pos + 1);
-
-            for (int i = Math.max(pos - 1, 0); i <= max; i++) {
-                RecyclerView.ViewHolder holder = viewPager.findViewHolderForAdapterPosition(i);
-                if (holder != null) {
-                    View view = holder.itemView;
-
-                    TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 0, mapView.getMeasuredHeight());
-                    translateAnimation.setDuration(400);
-                    translateAnimation.setInterpolator(new AccelerateInterpolator());
-                    translateAnimation.setStartOffset(k * 50);
-
-                    int finalI = i;
-                    translateAnimation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            view.setVisibility(View.GONE);
-                            // if it's the final animation
-                            if (finalI == max) {
-                                viewPager.setVisibility(View.GONE);
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-                    view.startAnimation(translateAnimation);
-                    k++;
-                }
-            }
+            startViewPagerTranslateAnimation(pos, 0, mapView.getMeasuredHeight(), new AccelerateInterpolator(), false);
         }
         currentlySelectedItem = null;
     }
@@ -416,35 +386,53 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         viewPager.setVisibility(View.VISIBLE);
 
         int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
+        startViewPagerTranslateAnimation(pos, mapView.getMeasuredHeight(), 0, new OvershootInterpolator(0.3f), true);
+    }
+
+    private void startViewPagerTranslateAnimation(int pos, float fromYDelta, float toYDelta, Interpolator interpolator, boolean animateToVisible) {
         int k = 0;
+        //noinspection ConstantConditions
+        final int max = Math.min(pagerAdapter.getItemCount() - 1, pos + 1);
 
-        for (int i = Math.max(pos - 1, 0); i <= Math.min(pagerAdapter.getItemCount() - 1, pos + 1); i++) {
+        for (int i = Math.max(pos - 1, 0); i <= max; i++) {
             RecyclerView.ViewHolder holder = viewPager.findViewHolderForAdapterPosition(i);
-            final View itemView = holder.itemView;
+            if (holder != null) {
+                View itemView = holder.itemView;
 
-            TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, mapView.getMeasuredHeight(), 0);
-            translateAnimation.setDuration(400);
-            translateAnimation.setStartOffset(k * 50);
-            translateAnimation.setInterpolator(new OvershootInterpolator(0.3f));
-            translateAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    itemView.setVisibility(View.VISIBLE);
-                }
+                TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, fromYDelta, toYDelta);
+                translateAnimation.setDuration(400);
+                translateAnimation.setInterpolator(interpolator);
+                translateAnimation.setStartOffset(k * 50);
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    itemView.setVisibility(View.VISIBLE);
-                }
+                int finalI = i;
+                translateAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        if (animateToVisible) {
+                            itemView.setVisibility(View.VISIBLE);
+                        }
+                    }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        if (animateToVisible) {
+                            itemView.setVisibility(View.VISIBLE);
+                        } else {
+                            itemView.setVisibility(View.GONE);
+                            // if it's the final animation
+                            if (finalI == max) {
+                                viewPager.setVisibility(View.GONE);
+                            }
+                        }
+                    }
 
-                }
-            });
-
-            itemView.startAnimation(translateAnimation);
-            k++;
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
+                itemView.startAnimation(translateAnimation);
+                k++;
+            }
         }
     }
 

@@ -143,24 +143,24 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         }
 
         @Override
-        public void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
+        protected void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
             clusterText.setText(context.getResources().getString(R.string.cluster_text, cluster.getItems().size()));
             clusterText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
-        public void setupClusterItemView(LatLngModel item, boolean isSelected) {
+        protected void setupClusterItemView(LatLngModel item, boolean isSelected) {
             clusterItemText.setText(context.getResources().getString(R.string.cluster_item_text, item.getIndex()));
             clusterItemText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
-        public void setClusterViewBackground(boolean isSelected) {
+        protected void setClusterViewBackground(boolean isSelected) {
             clusterIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
         }
 
         @Override
-        public void setClusterItemViewBackground(boolean isSelected) {
+        protected void setClusterItemViewBackground(boolean isSelected) {
             clusterItemIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
         }
     }

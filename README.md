@@ -1,6 +1,6 @@
 # MapPagerView
 
-A MapView combined with a ViewPager for ultimate search effiency! Can be used in an Activity or Fragment
+A MapView combined with a ViewPager for ultimate search efficiency! Can be used in an Activity or Fragment
 
 ## Features
 MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you can present an uncluttered, searchable interface to your users
@@ -27,11 +27,11 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 * The abstract class `MapPagerAdapter` controls the ViewPager logic, it requires 2 types: your data model class and the ViewHolder type
 * Obviously you'll also need to create your own ViewHolder
 
-##Related Links
+## Related Links
 * [Google MapsUtils](https://developers.google.com/maps/documentation/android-api/utility/)
 * [RecyclerViewPager](https://github.com/lsjwzh/RecyclerViewPager)
 
-###TODO: 
+### TODO: 
 - Build out example more
 - Make clustering optional
 - Replace Observable.create() with RxRelay

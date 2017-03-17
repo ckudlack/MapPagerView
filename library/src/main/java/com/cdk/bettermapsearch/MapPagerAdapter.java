@@ -13,6 +13,13 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class encapsulates the handling of the list that backs both the ViewPager and the marker clustering
+ * It also handles the callbacks that are required for the ViewPager item translation animations
+ *
+ * @param <LT> The class type of the item that will be displayed in the adapter
+ * @param <VH> The class type of your custom ViewHolder
+ */
 public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     private List<LT> backingList = new ArrayList<>();

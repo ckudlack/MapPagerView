@@ -18,13 +18,19 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.Collection;
 
+/**
+ * This class handles the underlying logic of selecting and unselecting markers and clusters,
+ * but leaves the creation of UI to the user
+ *
+ * @param <T> This is the object that will be displayed on the map and in the ViewPager
+ */
 public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
     protected Context context;
     protected IconGenerator clusterItemIconGenerator;
     protected IconGenerator clusterIconGenerator;
-    @Nullable protected Cluster<T> previousCluster;
-    @Nullable protected T previousClusterItem;
+    @Nullable private Cluster<T> previousCluster;
+    @Nullable private T previousClusterItem;
 
     private boolean clusteringEnabled = true;
     private SelectedItemCallback<T> itemCallback;
@@ -224,11 +230,31 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         return item1.getPosition().equals(item2.getPosition());
     }
 
-    public abstract void setupClusterView(Cluster<T> cluster, boolean isSelected);
+    /**
+     * This method sets the content of the marker for a cluster
+     *
+     * @param cluster    the cluster being rendered
+     * @param isSelected lets the user know the state of the marker so the UI can be updated in
+     *                   whatever way they want
+     */
+    protected abstract void setupClusterView(Cluster<T> cluster, boolean isSelected);
 
-    public abstract void setupClusterItemView(T item, boolean isSelected);
+    /**
+     * This method set the content of the marker for a singular item
+     *
+     * @param item       the marker item (singular, not in a cluster) being rendered
+     * @param isSelected lets the user know the state of the marker so the UI can be updated in
+     *                   whatever way they want
+     */
+    protected abstract void setupClusterItemView(T item, boolean isSelected);
 
-    public abstract void setClusterViewBackground(boolean isSelected);
+    /**
+     * This sets the background of the marker for the cluster
+     */
+    protected abstract void setClusterViewBackground(boolean isSelected);
 
-    public abstract void setClusterItemViewBackground(boolean isSelected);
+    /**
+     * This sets the background of the marker for a singular marker item
+     */
+    protected abstract void setClusterItemViewBackground(boolean isSelected);
 }
