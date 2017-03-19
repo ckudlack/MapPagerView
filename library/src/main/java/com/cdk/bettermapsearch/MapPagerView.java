@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
@@ -84,7 +85,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     private int minClusterSize = DEFAULT_CLUSTER_SIZE;
     private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
 
-    private NonHierarchicalDistanceBasedAlgorithm<T> algorithm;
+    private Algorithm<T> algorithm;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
@@ -183,6 +184,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         for (ClusterItem item : cluster.getItems()) {
             builder.include(item.getPosition());
         }
+
         // Get the LatLngBounds
         final LatLngBounds bounds = builder.build();
 
@@ -215,7 +217,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         currentlySelectedItem = clusterItem;
 
         if (viewPager.getVisibility() != View.VISIBLE) {
-            // This is to give the fragments some time to build their views
             showViewPager();
         } else {
             viewPager.scrollToPosition(currentlySelectedItem.getIndex());
@@ -543,11 +544,11 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         this.minClusterSize = size;
     }
 
-    public void setAlgorithm(NonHierarchicalDistanceBasedAlgorithm<T> algorithm) {
+    public void setAlgorithm(Algorithm<T> algorithm) {
         this.algorithm = algorithm;
     }
 
-    public NonHierarchicalDistanceBasedAlgorithm<T> getAlgorithm() {
+    public Algorithm<T> getAlgorithm() {
         return algorithm;
     }
     //endregion
