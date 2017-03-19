@@ -1,9 +1,14 @@
 package com.cdk.bettermapsearch;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.AttrRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.annotation.StyleRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -98,21 +103,30 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     // region constructors
     public MapPagerView(Context context) {
         super(context);
-        initialize();
+        initialize(null);
     }
 
     public MapPagerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(attrs);
     }
 
     public MapPagerView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize();
+        initialize(attrs);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public MapPagerView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initialize(attrs);
+    }
+
     //endregion
 
-    private void initialize() {
+    private void initialize(@Nullable AttributeSet attrs) {
+        // TODO: Handle attributes
+
         LayoutInflater.from(getContext()).inflate(R.layout.map_pager, this, true);
         mapView = (MapView) findViewById(R.id.map_view);
         viewPager = (RecyclerViewPager) findViewById(R.id.map_view_pager);
