@@ -3,7 +3,7 @@
 A MapView combined with a ViewPager for ultimate search efficiency! Can be used in an Activity or Fragment
 
 ## Features
-MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you can present an uncluttered, searchable interface to your users
+MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you can present an uncluttered, easily searchable interface to your users
 
 ## How to use
 1. Add MapPagerView into your layout xml. It requires a type to do its job correctly:
@@ -16,6 +16,8 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 ```
   ```
   MapPagerView<MyCustomModelClass> mapPagerView = findViewById(R.id.map_pager);
+  mapPagerView.onCreate(savedInstanceState);
+  mapPagerView.getMapAsync(this);
   ```
 2. The class type that is given to MapPagerView will need to implement the `MapClusterItem` interface.
 3. MapPagerView serves as a delegate for MapViews lifecycle methods, so you'll need to make sure to add all of the usual lifecycle methods that you use for MapView.
@@ -23,7 +25,7 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 5. Use the `updateItems()` method to populate data on the map.
 
 ## Customizability
-* The abstract class `CustomMarkerRenderer` controls the logic of when to show items & clusters as selected, you'll just need to implement the 4 abstract methods that handle the look of the markers
+* The abstract class `CustomMarkerRenderer` controls the logic of when to show items & clusters as selected, you'll just need to implement the 4 abstract methods that handle the UI of the markers
 * The abstract class `MapPagerAdapter` controls the ViewPager logic, it requires 2 types: your data model class and the ViewHolder type
 * Obviously you'll also need to create your own ViewHolder
 
@@ -33,6 +35,6 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 
 ### TODO: 
 - Build out example more
-- Make clustering optional
+- Add XML attributes to MapPagerView
 - Replace Observable.create() with RxRelay
 - Add to Maven
