@@ -259,7 +259,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
 
         currentlySelectedItem = clusterItem;
-        currentlySelectedItem.setIsViewed();
+        currentlySelectedItem.setIsViewed(true);
     }
 
     //region wrappers for MapView lifecycle

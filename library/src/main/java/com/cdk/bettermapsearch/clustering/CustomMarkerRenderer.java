@@ -198,7 +198,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public void renderPreviousClusterItemAsUnselected() {
         Marker marker = getMarker(previousClusterItem);
         if (previousClusterItem != null) {
-            previousClusterItem.setIsViewed();
+            previousClusterItem.setIsViewed(true);
         }
         if (marker != null) {
             setupClusterItemView(previousClusterItem, false);

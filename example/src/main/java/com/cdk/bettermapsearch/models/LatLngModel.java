@@ -52,7 +52,7 @@ public class LatLngModel implements MapClusterItem {
     }
 
     @Override
-    public void setIsViewed() {
-        isViewed = true;
+    public void setIsViewed(boolean isViewed) {
+        this.isViewed = isViewed;
     }
 }

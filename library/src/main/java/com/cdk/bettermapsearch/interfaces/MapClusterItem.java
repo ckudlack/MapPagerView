@@ -29,6 +29,7 @@ public interface MapClusterItem extends ClusterItem {
 
     /**
      * Call this once an item has been viewed
+     * @param isViewed
      */
-    void setIsViewed();
+    void setIsViewed(boolean isViewed);
 }
