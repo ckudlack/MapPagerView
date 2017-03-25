@@ -118,14 +118,11 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public LatLng getClusterMarker(Collection<Marker> markers, T item) {
         for (Marker m : markers) {
             Cluster<T> cluster = getCluster(m);
-            for (T clusterItem : cluster.getItems()) {
-                if (itemsAreEqual(clusterItem, item)) {
-                    // we have a live one
-                    if (previousCluster == null || !previousCluster.equals(cluster)) {
-                        renderClusterAsSelected(m, cluster);
-                    }
-                    return m.getPosition();
+            if (clusterContainsItem(cluster, item)) {
+                if (previousCluster == null || !previousCluster.equals(cluster)) {
+                    renderClusterAsSelected(m, cluster);
                 }
+                return m.getPosition();
             }
         }
         return null;
