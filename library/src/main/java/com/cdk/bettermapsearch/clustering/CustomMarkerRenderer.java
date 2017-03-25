@@ -33,6 +33,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     @Nullable private T previousClusterItem;
 
     private boolean clusteringEnabled = true;
+
+    // TODO: Get rid of this and use isSelected() in MapClusterItem
     private SelectedItemCallback<T> itemCallback;
 
     public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
@@ -46,19 +48,9 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onBeforeClusterRendered(Cluster<T> cluster, MarkerOptions markerOptions) {
-        boolean clusterContainsSelectedItem = false;
-
         T selectedItem = itemCallback.getSelectedItem();
-        if (selectedItem != null) {
-            for (T clusterItem : cluster.getItems()) {
-                if (itemsAreEqual(clusterItem, selectedItem)) {
-                    clusterContainsSelectedItem = true;
-                    break;
-                }
-            }
-        }
 
-        if (clusterContainsSelectedItem) {
+        if (selectedItem != null && clusterContainsItem(cluster, selectedItem)) {
             previousClusterItem = selectedItem;
             previousCluster = cluster;
 
@@ -68,7 +60,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             setupClusterView(cluster, false);
             setClusterViewBackground(false);
         }
-
 
         Bitmap icon = clusterIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
