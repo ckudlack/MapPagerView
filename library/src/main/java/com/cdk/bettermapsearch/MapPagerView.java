@@ -25,7 +25,6 @@ import com.cdk.bettermapsearch.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
-import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -63,8 +62,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         ClusterManager.OnClusterClickListener<T>,
         ClusterManager.OnClusterInfoWindowClickListener<T>,
         ClusterManager.OnClusterItemClickListener<T>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<T>,
-        SelectedItemCallback<T> {
+        ClusterManager.OnClusterItemInfoWindowClickListener<T> {
 
     private static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
     private static final int DEFAULT_MAP_CAMERA_ANIMATION_SPEED = 200;
@@ -154,7 +152,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         clusterManager.setAlgorithm(algorithm);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
-        markerRenderer.setItemCallback(this);
         markerRenderer.setMinClusterSize(minClusterSize);
         setClusteringEnabled(clusteringEnabled);
         clusterManager.setRenderer(markerRenderer);
@@ -185,7 +182,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         if (currentlySelectedItem != null && markerRenderer.clusterContainsItem(cluster, currentlySelectedItem)) {
             markerRenderer.renderPreviousClusterAsUnselected();
         } else {
-            currentlySelectedItem = null;
             dismissViewPager();
             markerRenderer.unselectAllItems();
         }
@@ -229,6 +225,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         markerRenderer.renderClusterItemAsSelected(clusterItem);
 
         currentlySelectedItem = clusterItem;
+        currentlySelectedItem.setIsSelected(true);
 
         if (viewPager.getVisibility() != View.VISIBLE) {
             showViewPager();
@@ -258,8 +255,15 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
 
-        currentlySelectedItem = clusterItem;
+        // the old item
+        currentlySelectedItem.setIsSelected(false);
         currentlySelectedItem.setIsViewed(true);
+
+        // the new one
+        clusterItem.setIsSelected(true);
+
+        // update
+        currentlySelectedItem = clusterItem;
     }
 
     //region wrappers for MapView lifecycle
@@ -390,6 +394,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             int pos = viewPager.getCurrentPosition();
             startViewPagerTranslateAnimation(pos, 0, mapView.getMeasuredHeight(), new AccelerateInterpolator(), false);
         }
+
+        currentlySelectedItem.setIsSelected(false);
         currentlySelectedItem = null;
     }
 
@@ -567,9 +573,4 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     }
     //endregion
 
-    @Override
-    @Nullable
-    public T getSelectedItem() {
-        return currentlySelectedItem;
-    }
 }

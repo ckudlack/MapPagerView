@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
-import com.cdk.bettermapsearch.interfaces.SelectedItemCallback;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,9 +33,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     private boolean clusteringEnabled = true;
 
-    // TODO: Get rid of this and use isSelected() in MapClusterItem
-    private SelectedItemCallback<T> itemCallback;
-
     public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
@@ -48,9 +44,9 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onBeforeClusterRendered(Cluster<T> cluster, MarkerOptions markerOptions) {
-        T selectedItem = itemCallback.getSelectedItem();
+        T selectedItem = getSelectedItemFromCluster(cluster);
 
-        if (selectedItem != null && clusterContainsItem(cluster, selectedItem)) {
+        if (selectedItem != null) {
             previousClusterItem = selectedItem;
             previousCluster = cluster;
 
@@ -67,7 +63,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
-        if (itemCallback.getSelectedItem() != null && itemsAreEqual(itemCallback.getSelectedItem(), item)) {
+        if (item.isSelected()) {
             previousClusterItem = item;
             setupClusterItemView(item, true);
             setClusterItemViewBackground(true);
@@ -83,7 +79,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     @Override
     protected void onClusterItemRendered(T clusterItem, Marker marker) {
         super.onClusterItemRendered(clusterItem, marker);
-        if (itemCallback.getSelectedItem() != null && itemsAreEqual(itemCallback.getSelectedItem(), clusterItem)) {
+        if (clusterItem.isSelected()) {
             marker.showInfoWindow();
         }
     }
@@ -126,6 +122,15 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
             }
         }
         return false;
+    }
+
+    private T getSelectedItemFromCluster(Cluster<T> cluster) {
+        for (T clusterItem : cluster.getItems()) {
+            if (clusterItem.isSelected()) {
+                return clusterItem;
+            }
+        }
+        return null;
     }
 
     private void renderClusterAsSelected(Marker m, Cluster<T> cluster) {
@@ -183,7 +188,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         }
     }
 
-    public void renderPreviousClusterItemAsUnselected() {
+    private void renderPreviousClusterItemAsUnselected() {
         Marker marker = getMarker(previousClusterItem);
         if (previousClusterItem != null) {
             previousClusterItem.setIsViewed(true);
@@ -200,10 +205,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     public void unselectAllItems() {
         renderPreviousClusterAsUnselected();
         renderPreviousClusterItemAsUnselected();
-    }
-
-    public void setItemCallback(SelectedItemCallback<T> itemCallback) {
-        this.itemCallback = itemCallback;
     }
 
     private boolean itemsAreEqual(MapClusterItem item1, MapClusterItem item2) {
