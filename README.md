@@ -21,6 +21,15 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
   ```
 2. MapPagerView serves as a delegate for MapViews lifecycle methods, so you'll need to make sure to add all of the usual lifecycle methods that you use for MapView.
 3. When the GoogleMap is ready, you'll receive a callback from MapPagerView (supplied to the `getMapAsync` method) that provides all of the fields needed to create your custom MarkerRenderer, which you give back to MapPagerView.
+
+```
+@Override
+public CustomMarkerRenderer onMapReady(GoogleMap googleMap, CachedClusterManager clusterManager) {
+    // You'll need to return your custom implmentation of MarkerRenderer and pass it back to the MapPagerView
+    return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
+}
+```
+
 4. Use the `updateItems()` method to populate data on the map.
 
 ## Customizability
