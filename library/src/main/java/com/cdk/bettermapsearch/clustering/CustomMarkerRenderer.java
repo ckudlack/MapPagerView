@@ -20,22 +20,20 @@ import java.util.Collection;
 /**
  * This class handles the underlying logic of selecting and unselecting markers and clusters,
  * but leaves the creation of UI to the user
- *
- * @param <T> This is the object that will be displayed on the map and in the ViewPager
  */
-public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
+public abstract class CustomMarkerRenderer extends DefaultClusterRenderer<MapClusterItem> {
 
     protected Context context;
 
     protected IconGenerator clusterItemIconGenerator;
     protected IconGenerator clusterIconGenerator;
 
-    @Nullable private Cluster<T> previousCluster;
-    @Nullable private T previousClusterItem;
+    @Nullable private Cluster<MapClusterItem> previousCluster;
+    @Nullable private MapClusterItem previousClusterItem;
 
     private boolean clusteringEnabled = true;
 
-    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<MapClusterItem> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
 
@@ -45,8 +43,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     }
 
     @Override
-    protected void onBeforeClusterRendered(Cluster<T> cluster, MarkerOptions markerOptions) {
-        T selectedItem = getSelectedItemFromCluster(cluster);
+    protected void onBeforeClusterRendered(Cluster<MapClusterItem> cluster, MarkerOptions markerOptions) {
+        MapClusterItem selectedItem = getSelectedItemFromCluster(cluster);
 
         if (selectedItem != null) {
             previousClusterItem = selectedItem;
@@ -64,7 +62,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     }
 
     @Override
-    protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
+    protected void onBeforeClusterItemRendered(MapClusterItem item, MarkerOptions markerOptions) {
         final boolean selected = item.isSelected();
 
         if (selected) {
@@ -79,21 +77,21 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     }
 
     @Override
-    protected void onClusterItemRendered(T clusterItem, Marker marker) {
+    protected void onClusterItemRendered(MapClusterItem clusterItem, Marker marker) {
         if (clusterItem.isSelected()) {
             marker.showInfoWindow();
         }
     }
 
     @Override
-    protected void onClusterRendered(Cluster<T> cluster, Marker marker) {
+    protected void onClusterRendered(Cluster<MapClusterItem> cluster, Marker marker) {
         if (previousCluster == cluster) {
             marker.showInfoWindow();
         }
     }
 
     @Override
-    protected boolean shouldRenderAsCluster(Cluster<T> cluster) {
+    protected boolean shouldRenderAsCluster(Cluster<MapClusterItem> cluster) {
         return clusteringEnabled && super.shouldRenderAsCluster(cluster);
     }
 
@@ -101,9 +99,9 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         this.clusteringEnabled = clusteringEnabled;
     }
 
-    public LatLng getClusterMarkerPosition(Collection<Marker> markers, T item) {
+    public LatLng getClusterMarkerPosition(Collection<Marker> markers, MapClusterItem item) {
         for (Marker m : markers) {
-            Cluster<T> cluster = getCluster(m);
+            Cluster<MapClusterItem> cluster = getCluster(m);
             if (clusterContainsItem(cluster, item)) {
                 if (previousCluster == null || !previousCluster.equals(cluster)) {
                     renderClusterAsSelected(m, cluster);
@@ -114,12 +112,12 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         return null;
     }
 
-    public boolean clusterContainsItem(Cluster<T> cluster, @Nullable T item) {
+    public boolean clusterContainsItem(Cluster<MapClusterItem> cluster, @Nullable MapClusterItem item) {
         return item != null && cluster.getItems().contains(item);
     }
 
-    private T getSelectedItemFromCluster(Cluster<T> cluster) {
-        for (T clusterItem : cluster.getItems()) {
+    private MapClusterItem getSelectedItemFromCluster(Cluster<MapClusterItem> cluster) {
+        for (MapClusterItem clusterItem : cluster.getItems()) {
             if (clusterItem.isSelected()) {
                 return clusterItem;
             }
@@ -127,7 +125,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         return null;
     }
 
-    private void renderClusterAsSelected(Marker m, Cluster<T> cluster) {
+    private void renderClusterAsSelected(Marker m, Cluster<MapClusterItem> cluster) {
         setupClusterView(cluster, true);
         setClusterViewBackground(true);
 
@@ -145,7 +143,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         previousCluster = cluster;
     }
 
-    public boolean renderClusterItemAsSelected(T item) {
+    public boolean renderClusterItemAsSelected(MapClusterItem item) {
         Marker marker = getMarker(item);
         if (marker != null) {
             setupClusterItemView(item, true);
@@ -221,7 +219,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
      * @param isSelected lets the user know the state of the marker so the UI can be updated in
      *                   whatever way they want
      */
-    protected abstract void setupClusterView(Cluster<T> cluster, boolean isSelected);
+    protected abstract void setupClusterView(Cluster<MapClusterItem> cluster, boolean isSelected);
 
     /**
      * This method set the content of the marker for a singular item
@@ -230,7 +228,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
      * @param isSelected lets the user know the state of the marker so the UI can be updated in
      *                   whatever way they want
      */
-    protected abstract void setupClusterItemView(T item, boolean isSelected);
+    protected abstract void setupClusterItemView(MapClusterItem item, boolean isSelected);
 
     /**
      * This sets the background of the marker for the cluster

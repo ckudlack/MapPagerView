@@ -17,10 +17,9 @@ import java.util.List;
  * This class encapsulates the handling of the list that backs both the ViewPager and the marker clustering
  * It also handles the callbacks that are required for the ViewPager item translation animations
  *
- * @param <LT> The class type of the item that will be displayed in the adapter
  * @param <VH> The class type of your custom ViewHolder
  */
-public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class MapPagerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     private List<MapClusterItem> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
@@ -69,7 +68,7 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         return backingList.get(index).getPosition();
     }
 
-    public final void updateItems(List<LT> items) {
+    public final void updateItems(List<MapClusterItem> items) {
         this.backingList.clear();
         this.backingList.addAll(items);
     }
@@ -78,8 +77,8 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         return backingList.indexOf(item);
     }
 
-    public LT getItemAtPosition(int position) {
+    public MapClusterItem getItemAtPosition(int position) {
         //noinspection unchecked
-        return (LT) backingList.get(position);
+        return backingList.get(position);
     }
 }

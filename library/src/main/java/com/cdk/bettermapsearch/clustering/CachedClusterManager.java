@@ -3,9 +3,9 @@ package com.cdk.bettermapsearch.clustering;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 
 
@@ -13,7 +13,7 @@ import com.google.maps.android.clustering.ClusterManager;
  * Custom implementation of ClusterManager that adds a custom OnCameraIdleListener
  * This allows the user to do some custom task after the ClusterManager re-renders the markers
  */
-public class CachedClusterManager<T extends ClusterItem> extends ClusterManager<T> {
+public class CachedClusterManager extends ClusterManager<MapClusterItem> {
 
     private @Nullable GoogleMap.OnCameraIdleListener cameraIdleListener;
 

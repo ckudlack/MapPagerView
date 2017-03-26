@@ -16,6 +16,7 @@ import com.cdk.bettermapsearch.MapPagerView;
 import com.cdk.bettermapsearch.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
 import com.cdk.bettermapsearch.example.R;
+import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.models.ItemModel;
 import com.cdk.bettermapsearch.models.LatLngModel;
@@ -28,13 +29,13 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
 
-public class MapFragment extends Fragment implements MapReadyCallback<LatLngModel> {
+public class MapFragment extends Fragment implements MapReadyCallback {
 
     public MapFragment() {
         // Required empty public constructor
     }
 
-    private MapPagerView<LatLngModel> mapPagerView;
+    private MapPagerView mapPagerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,8 +98,16 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         mapPagerView.onLowMemory();
     }
 
+    private LatLngBounds createBoundsFromList(List<LatLngModel> items) {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLngModel item : items) {
+            boundsBuilder.include(item.getPosition());
+        }
+        return boundsBuilder.build();
+    }
+
     @Override
-    public CustomMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, CachedClusterManager<LatLngModel> clusterManager) {
+    public CustomMarkerRenderer onMapReady(GoogleMap googleMap, CachedClusterManager clusterManager) {
         String json = null;
         try {
             json = FileUtils.getStringFromFile(getContext(), "sample_locations.json");
@@ -116,22 +125,14 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
     }
 
-    private LatLngBounds createBoundsFromList(List<LatLngModel> items) {
-        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for (LatLngModel item : items) {
-            boundsBuilder.include(item.getPosition());
-        }
-        return boundsBuilder.build();
-    }
-
     //region example classes
 
-    public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
+    public static class MyMarkerRenderer extends CustomMarkerRenderer {
 
         private TextView clusterText;
         private TextView clusterItemText;
 
-        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<LatLngModel> clusterManager) {
+        public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<MapClusterItem> clusterManager) {
             super(context, map, clusterManager);
 
             View clusterView = View.inflate(context, R.layout.cluster_view, null);
@@ -143,14 +144,15 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         }
 
         @Override
-        protected void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
+        protected void setupClusterView(Cluster<MapClusterItem> cluster, boolean isSelected) {
             clusterText.setText(context.getResources().getString(R.string.cluster_text, cluster.getItems().size()));
             clusterText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
-        protected void setupClusterItemView(LatLngModel item, boolean isSelected) {
-            clusterItemText.setText(item.getName());
+        protected void setupClusterItemView(MapClusterItem item, boolean isSelected) {
+            final LatLngModel latLngModel = (LatLngModel) item;
+            clusterItemText.setText(latLngModel.getName());
             clusterItemText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
@@ -176,7 +178,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         }
     }
 
-    public static class MyViewPagerAdapter extends MapPagerAdapter<LatLngModel, ItemViewHolder> {
+    public static class MyViewPagerAdapter extends MapPagerAdapter<ItemViewHolder> {
 
         public MyViewPagerAdapter() {
         }
@@ -185,7 +187,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         public void onBindViewHolder(ItemViewHolder holder, int position) {
             super.onBindViewHolder(holder, position);
 
-            final LatLngModel latLngModel = getItemAtPosition(position);
+            final LatLngModel latLngModel = (LatLngModel) getItemAtPosition(position);
             holder.title.setText(latLngModel.getName());
         }
 
