@@ -46,16 +46,15 @@ public abstract class CustomMarkerRenderer extends DefaultClusterRenderer<MapClu
     protected void onBeforeClusterRendered(Cluster<MapClusterItem> cluster, MarkerOptions markerOptions) {
         MapClusterItem selectedItem = getSelectedItemFromCluster(cluster);
 
-        if (selectedItem != null) {
+        final boolean clusterContainsSelectedItem = selectedItem != null;
+
+        if (clusterContainsSelectedItem) {
             previousClusterItem = selectedItem;
             previousCluster = cluster;
-
-            setupClusterView(cluster, true);
-            setClusterViewBackground(true);
-        } else {
-            setupClusterView(cluster, false);
-            setClusterViewBackground(false);
         }
+
+        setupClusterView(cluster, clusterContainsSelectedItem);
+        setClusterViewBackground(clusterContainsSelectedItem);
 
         Bitmap icon = clusterIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -133,9 +132,7 @@ public abstract class CustomMarkerRenderer extends DefaultClusterRenderer<MapClu
         m.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
         m.showInfoWindow();
 
-        if (previousCluster != null) {
-            renderPreviousClusterAsUnselected();
-        }
+        renderPreviousClusterAsUnselected();
         if (previousClusterItem != null) {
             renderPreviousClusterItemAsUnselected();
             previousClusterItem = null;
@@ -153,13 +150,12 @@ public abstract class CustomMarkerRenderer extends DefaultClusterRenderer<MapClu
             marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
             marker.showInfoWindow();
 
-            if (previousClusterItem != null && !itemsAreEqual(previousClusterItem, item)) {
+            if (!itemsAreEqual(previousClusterItem, item)) {
                 renderPreviousClusterItemAsUnselected();
             }
-            if (previousCluster != null) {
-                renderPreviousClusterAsUnselected();
-                previousCluster = null;
-            }
+
+            renderPreviousClusterAsUnselected();
+            previousCluster = null;
 
             previousClusterItem = item;
             return true;
@@ -170,13 +166,15 @@ public abstract class CustomMarkerRenderer extends DefaultClusterRenderer<MapClu
     }
 
     public void renderPreviousClusterAsUnselected() {
-        Marker marker = getMarker(previousCluster);
-        if (marker != null) {
-            setupClusterView(previousCluster, false);
-            setClusterViewBackground(false);
+        if (previousCluster != null) {
+            Marker marker = getMarker(previousCluster);
+            if (marker != null) {
+                setupClusterView(previousCluster, false);
+                setClusterViewBackground(false);
 
-            Bitmap icon = clusterIconGenerator.makeIcon();
-            marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
+                Bitmap icon = clusterIconGenerator.makeIcon();
+                marker.setIcon(BitmapDescriptorFactory.fromBitmap(icon));
+            }
         }
     }
 
