@@ -8,43 +8,30 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class LatLngModel implements MapClusterItem {
 
-    private String title;
+    private String name;
     private int price;
     private double latitude;
     private double longitude;
     private LatLng position;
-    private int index;
     private boolean isViewed = false;
     private boolean isSelected = false;
 
     @Override
     public LatLng getPosition() {
+        if (position == null) {
+            position = new LatLng(latitude, longitude);
+        }
         return position;
     }
 
     @Override
     public String getTitle() {
-        return title;
+        return null;
     }
 
     @Override
     public String getSnippet() {
         return null;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    @Override
-    public void buildPositionFromLatAndLng() {
-        position = new LatLng(latitude, longitude);
     }
 
     @Override
@@ -62,8 +49,11 @@ public class LatLngModel implements MapClusterItem {
         return isSelected;
     }
 
-    @Override
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -22,16 +22,14 @@ import java.util.List;
  */
 public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    private List<LT> backingList = new ArrayList<>();
+    private List<MapClusterItem> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
 
     public MapPagerAdapter() {
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
+    public abstract VH onCreateViewHolder(ViewGroup parent, int viewType);
 
     @CallSuper
     @Override
@@ -76,7 +74,12 @@ public abstract class MapPagerAdapter<LT extends MapClusterItem, VH extends Recy
         this.backingList.addAll(items);
     }
 
+    public int getPositionOfItem(MapClusterItem item) {
+        return backingList.indexOf(item);
+    }
+
     public LT getItemAtPosition(int position) {
-        return backingList.get(position);
+        //noinspection unchecked
+        return (LT) backingList.get(position);
     }
 }

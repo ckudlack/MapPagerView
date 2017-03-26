@@ -150,7 +150,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
         @Override
         protected void setupClusterItemView(LatLngModel item, boolean isSelected) {
-            clusterItemText.setText(context.getResources().getString(R.string.cluster_item_text, item.getIndex()));
+            clusterItemText.setText(item.getName());
             clusterItemText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
         }
 
@@ -186,7 +186,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
             super.onBindViewHolder(holder, position);
 
             final LatLngModel latLngModel = getItemAtPosition(position);
-            holder.title.setText("Item " + latLngModel.getIndex());
+            holder.title.setText(latLngModel.getName());
         }
 
         @Override

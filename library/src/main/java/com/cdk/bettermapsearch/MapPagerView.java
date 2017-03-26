@@ -218,7 +218,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     @Override
     public boolean onClusterItemClick(T clusterItem) {
-        if (markerRenderer == null) {
+        if (markerRenderer == null || pagerAdapter == null) {
             return false;
         }
 
@@ -230,7 +230,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         if (viewPager.getVisibility() != View.VISIBLE) {
             showViewPager();
         } else {
-            viewPager.scrollToPosition(currentlySelectedItem.getIndex());
+            viewPager.scrollToPosition(pagerAdapter.getPositionOfItem(currentlySelectedItem));
         }
         return false;
     }
@@ -250,17 +250,16 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
         //noinspection unchecked
         T clusterItem = (T) pagerAdapter.getItemAtPosition(position);
-        LatLng itemPosition;
-
-        itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
+        clusterItem.setIsSelected(true);
 
         // the old item
         currentlySelectedItem.setIsSelected(false);
         currentlySelectedItem.setIsViewed(true);
 
-        // the new one
-        clusterItem.setIsSelected(true);
+        LatLng itemPosition;
+
+        itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
 
         // update
         currentlySelectedItem = clusterItem;
@@ -346,7 +345,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
         pagerAdapter.clearCallbacks();
 
-        int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
+        int pos = currentlySelectedItem != null ? pagerAdapter.getPositionOfItem(currentlySelectedItem) : viewPager.getCurrentPosition();
 
         List<Observable<Void>> observables = new ArrayList<>();
 
@@ -382,7 +381,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             animateViewPagerVisible();
         }
 
-        viewPager.scrollToPosition(currentlySelectedItem.getIndex());
+        viewPager.scrollToPosition(pagerAdapter.getPositionOfItem(currentlySelectedItem));
     }
 
     public void dismissViewPager() {
@@ -391,8 +390,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         }
 
         if (viewPager.getVisibility() == View.VISIBLE) {
-            int pos = viewPager.getCurrentPosition();
-            startViewPagerTranslateAnimation(pos, 0, mapView.getMeasuredHeight(), new AccelerateInterpolator(), false);
+            startViewPagerTranslateAnimation(viewPager.getCurrentPosition(), 0, mapView.getMeasuredHeight(), new AccelerateInterpolator(), false);
         }
 
         currentlySelectedItem.setIsSelected(false);
@@ -406,7 +404,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
         viewPager.setVisibility(View.VISIBLE);
 
-        int pos = currentlySelectedItem != null ? currentlySelectedItem.getIndex() : viewPager.getCurrentPosition();
+        int pos = currentlySelectedItem != null ? pagerAdapter.getPositionOfItem(currentlySelectedItem) : viewPager.getCurrentPosition();
         startViewPagerTranslateAnimation(pos, mapView.getMeasuredHeight(), 0, new OvershootInterpolator(0.3f), true);
     }
 
@@ -474,13 +472,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         }
 
         clusterManager.clearItems();
-
-        for (int i = 0; i < clusterItems.size(); i++) {
-            // set up each cluster item with the information it needs
-            clusterItems.get(i).setIndex(i);
-            clusterItems.get(i).buildPositionFromLatAndLng();
-        }
-
         clusterManager.addItems(clusterItems);
         clusterManager.cluster();
 

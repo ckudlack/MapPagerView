@@ -63,14 +63,12 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
-        if (item.isSelected()) {
-            previousClusterItem = item;
-            setupClusterItemView(item, true);
-            setClusterItemViewBackground(true);
-        } else {
-            setupClusterItemView(item, false);
-            setClusterItemViewBackground(false);
-        }
+        final boolean selected = item.isSelected();
+
+        previousClusterItem = item;
+
+        setupClusterItemView(item, selected);
+        setClusterItemViewBackground(selected);
 
         Bitmap icon = clusterItemIconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
@@ -78,7 +76,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onClusterItemRendered(T clusterItem, Marker marker) {
-        super.onClusterItemRendered(clusterItem, marker);
         if (clusterItem.isSelected()) {
             marker.showInfoWindow();
         }
@@ -86,8 +83,6 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     @Override
     protected void onClusterRendered(Cluster<T> cluster, Marker marker) {
-        super.onClusterRendered(cluster, marker);
-
         if (previousCluster == cluster) {
             marker.showInfoWindow();
         }
@@ -192,6 +187,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         Marker marker = getMarker(previousClusterItem);
         if (previousClusterItem != null) {
             previousClusterItem.setIsViewed(true);
+            previousClusterItem.setIsSelected(false);
         }
         if (marker != null) {
             setupClusterItemView(previousClusterItem, false);
