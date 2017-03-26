@@ -53,6 +53,7 @@ import rx.android.schedulers.AndroidSchedulers;
 /**
  * This class encapsulates the MapView, ViewPager, and all the logic and callbacks related to linking the two
  */
+@SuppressWarnings("unused")
 public class MapPagerView extends FrameLayout implements
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
@@ -244,8 +245,7 @@ public class MapPagerView extends FrameLayout implements
             return;
         }
 
-        //noinspection unchecked
-        MapClusterItem clusterItem = (MapClusterItem) pagerAdapter.getItemAtPosition(position);
+        MapClusterItem clusterItem = pagerAdapter.getItemAtPosition(position);
         clusterItem.setIsSelected(true);
 
         // the old item
