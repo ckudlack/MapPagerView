@@ -84,7 +84,9 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     @Nullable private CustomMarkerRenderer<T> markerRenderer;
     @Nullable private CachedClusterManager<T> clusterManager;
+
     private boolean clusteringEnabled = true;
+
     private int minClusterSize = DEFAULT_CLUSTER_SIZE;
     private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
 
@@ -179,7 +181,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             return true;
         }
 
-        if (currentlySelectedItem != null && markerRenderer.clusterContainsItem(cluster, currentlySelectedItem)) {
+        if (markerRenderer.clusterContainsItem(cluster, currentlySelectedItem)) {
             markerRenderer.renderPreviousClusterAsUnselected();
         } else {
             dismissViewPager();
@@ -393,8 +395,10 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             startViewPagerTranslateAnimation(viewPager.getCurrentPosition(), 0, mapView.getMeasuredHeight(), new AccelerateInterpolator(), false);
         }
 
-        currentlySelectedItem.setIsSelected(false);
-        currentlySelectedItem = null;
+        if (currentlySelectedItem != null) {
+            currentlySelectedItem.setIsSelected(false);
+            currentlySelectedItem = null;
+        }
     }
 
     private void animateViewPagerVisible() {

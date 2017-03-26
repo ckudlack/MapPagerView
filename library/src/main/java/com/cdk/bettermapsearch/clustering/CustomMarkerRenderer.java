@@ -26,8 +26,10 @@ import java.util.Collection;
 public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
     protected Context context;
+
     protected IconGenerator clusterItemIconGenerator;
     protected IconGenerator clusterIconGenerator;
+
     @Nullable private Cluster<T> previousCluster;
     @Nullable private T previousClusterItem;
 
@@ -65,7 +67,9 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
     protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
         final boolean selected = item.isSelected();
 
-        previousClusterItem = item;
+        if (selected) {
+            previousClusterItem = item;
+        }
 
         setupClusterItemView(item, selected);
         setClusterItemViewBackground(selected);
@@ -110,13 +114,8 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         return null;
     }
 
-    public boolean clusterContainsItem(Cluster<T> cluster, T item) {
-        for (T clusterItem : cluster.getItems()) {
-            if (itemsAreEqual(clusterItem, item)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean clusterContainsItem(Cluster<T> cluster, @Nullable T item) {
+        return item != null && cluster.getItems().contains(item);
     }
 
     private T getSelectedItemFromCluster(Cluster<T> cluster) {
