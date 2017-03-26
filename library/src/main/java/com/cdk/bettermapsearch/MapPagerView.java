@@ -142,9 +142,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     @Override
     public void onMapClick(LatLng latLng) {
         dismissViewPager();
-        if (markerRenderer != null) {
-            markerRenderer.unselectAllItems();
-        }
     }
 
     @Override
@@ -185,7 +182,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             markerRenderer.renderPreviousClusterAsUnselected();
         } else {
             dismissViewPager();
-            markerRenderer.unselectAllItems();
         }
 
         // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
@@ -258,9 +254,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         currentlySelectedItem.setIsSelected(false);
         currentlySelectedItem.setIsViewed(true);
 
-        LatLng itemPosition;
-
-        itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarker(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
+        LatLng itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarkerPosition(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
 
         // update
@@ -398,6 +392,10 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         if (currentlySelectedItem != null) {
             currentlySelectedItem.setIsSelected(false);
             currentlySelectedItem = null;
+        }
+
+        if (markerRenderer != null) {
+            markerRenderer.unselectAllItems();
         }
     }
 

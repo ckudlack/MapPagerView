@@ -101,7 +101,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
         this.clusteringEnabled = clusteringEnabled;
     }
 
-    public LatLng getClusterMarker(Collection<Marker> markers, T item) {
+    public LatLng getClusterMarkerPosition(Collection<Marker> markers, T item) {
         for (Marker m : markers) {
             Cluster<T> cluster = getCluster(m);
             if (clusterContainsItem(cluster, item)) {
