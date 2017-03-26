@@ -466,18 +466,13 @@ public class MapPagerView extends FrameLayout implements
     }
 
     @SuppressWarnings("unchecked")
-    public void updateMapItems(List<? extends MapClusterItem> clusterItems) {
+    public void updateMapItems(List<MapClusterItem> clusterItems) {
         if (clusterManager == null || pagerAdapter == null) {
             return;
         }
 
         clusterManager.clearItems();
-
-        // Can't use .addAll() with wildcard
-        for (MapClusterItem clusterItem : clusterItems) {
-            clusterManager.addItem(clusterItem);
-        }
-
+        clusterManager.addItems(clusterItems);
         clusterManager.cluster();
 
         pagerAdapter.updateItems(clusterItems);
