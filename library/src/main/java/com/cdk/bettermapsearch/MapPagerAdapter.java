@@ -68,7 +68,7 @@ public abstract class MapPagerAdapter<VH extends RecyclerView.ViewHolder> extend
         return backingList.get(index).getPosition();
     }
 
-    public final void updateItems(List<MapClusterItem> items) {
+    public final void updateItems(List<? extends MapClusterItem> items) {
         this.backingList.clear();
         this.backingList.addAll(items);
     }

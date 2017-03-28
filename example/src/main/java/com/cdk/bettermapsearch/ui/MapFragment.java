@@ -119,7 +119,7 @@ public class MapFragment extends Fragment implements MapReadyCallback {
 
         final List<LatLngModel> items = itemModel.getItems();
 
-        mapPagerView.updateMapItems(items);
+        mapPagerView.updateMapItems(items, false);
         mapPagerView.moveCameraToBounds(createBoundsFromList(items), 100);
 
         return new MyMarkerRenderer(getContext(), googleMap, clusterManager);

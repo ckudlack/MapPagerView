@@ -43,7 +43,9 @@ import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgor
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -465,21 +467,56 @@ public class MapPagerView extends FrameLayout implements
         this.pagerAdapter = adapter;
     }
 
-    @SuppressWarnings("unchecked")
-    public void updateMapItems(List<? extends MapClusterItem> clusterItems) {
+    public void updateMapItems(@NonNull List<? extends MapClusterItem> clusterItems, boolean groupItemsByNearestNeighbor) {
         if (clusterManager == null || pagerAdapter == null) {
             return;
         }
 
         clusterManager.clearItems();
-
         // Can't use .addAll() with wildcard
         for (MapClusterItem clusterItem : clusterItems) {
             clusterManager.addItem(clusterItem);
         }
         clusterManager.cluster();
 
-        pagerAdapter.updateItems(clusterItems);
+        final List<? extends MapClusterItem> items = groupItemsByNearestNeighbor ? getClosestNeighborsList() : clusterItems;
+        pagerAdapter.updateItems(items);
+    }
+
+    private List<MapClusterItem> getClosestNeighborsList() {
+        List<MapClusterItem> processedList = new ArrayList<>();
+
+        final Set<? extends Cluster<MapClusterItem>> clusters = algorithm.getClusters(12.5);
+        final List<Cluster<MapClusterItem>> closestClusters = getClosestClusterNeighbors(clusters);
+
+        for (Cluster<MapClusterItem> cluster : closestClusters) {
+            processedList.addAll(cluster.getItems());
+        }
+        return processedList;
+    }
+
+    private List<Cluster<MapClusterItem>> getClosestClusterNeighbors(Set<? extends Cluster<MapClusterItem>> clusters) {
+        if (clusters.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        List<Cluster<MapClusterItem>> startList = new ArrayList<>(clusters.size());
+        startList.addAll(clusters);
+
+        List<Cluster<MapClusterItem>> processedList = new ArrayList<>(clusters.size());
+        processedList.add(startList.get(0));
+
+        // For each cluster, find the next closest cluster to it
+        for (int i = 0; i < clusters.size(); i++) {
+            final List<Cluster<MapClusterItem>> subList = startList.subList(Math.min(i + 1, clusters.size()), clusters.size());
+            if (subList.size() > 0) {
+                Collections.sort(subList, new MapClusterItemComparator(startList.get(i)));
+                // add the next nearest neighbor to the list
+                processedList.add(subList.get(0));
+            }
+        }
+
+        return processedList;
     }
 
     //region ViewPager customization
