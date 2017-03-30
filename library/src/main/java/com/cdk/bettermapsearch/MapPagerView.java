@@ -99,6 +99,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
     @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
     @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
+    @Nullable private RecyclerViewPager.OnPageChangedListener customOnPageChangedListener;
     //endregion
 
     // region constructors
@@ -290,7 +291,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     public void onDestroy() {
         mapView.onDestroy();
-        viewPager.removeOnPageChangedListener(this);
+        viewPager.removeOnPageChangedListener(customOnPageChangedListener == null ? this : customOnPageChangedListener);
     }
 
     public void onLowMemory() {
@@ -536,6 +537,13 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             viewPager.scrollToPosition(position);
         }
     }
+
+    public void setCustomOnPageChangedListener(@Nullable RecyclerViewPager.OnPageChangedListener customOnPageChangedListener) {
+        this.customOnPageChangedListener = customOnPageChangedListener;
+        viewPager.removeOnPageChangedListener(this);
+        viewPager.addOnPageChangedListener(customOnPageChangedListener);
+    }
+
     //endregion
 
     //region Google Map Customization
