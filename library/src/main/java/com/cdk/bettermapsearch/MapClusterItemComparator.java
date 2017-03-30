@@ -6,16 +6,17 @@ import com.google.maps.android.clustering.Cluster;
 
 import java.util.Comparator;
 
-public class MapClusterItemComparator implements Comparator<Cluster<MapClusterItem>> {
+@SuppressWarnings("WeakerAccess")
+public class MapClusterItemComparator<T extends MapClusterItem> implements Comparator<Cluster<T>> {
 
-    private Cluster<MapClusterItem> currentLocation;
+    private Cluster<T> currentLocation;
 
-    public MapClusterItemComparator(Cluster<MapClusterItem> currentLocation) {
+    public MapClusterItemComparator(Cluster<T> currentLocation) {
         this.currentLocation = currentLocation;
     }
 
     @Override
-    public int compare(Cluster<MapClusterItem> cluster1, Cluster<MapClusterItem> cluster2) {
+    public int compare(Cluster<T> cluster1, Cluster<T> cluster2) {
         final double distance1 = SphericalUtil.computeDistanceBetween(currentLocation.getPosition(), cluster1.getPosition());
         final double distance2 = SphericalUtil.computeDistanceBetween(currentLocation.getPosition(), cluster2.getPosition());
 

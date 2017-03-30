@@ -2,6 +2,7 @@ package com.cdk.bettermapsearch.interfaces;
 
 import com.google.maps.android.clustering.ClusterItem;
 
+@SuppressWarnings("unused")
 public interface MapClusterItem extends ClusterItem {
 
     /**

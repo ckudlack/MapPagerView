@@ -13,7 +13,7 @@ import com.google.maps.android.clustering.ClusterManager;
  * Custom implementation of ClusterManager that adds a custom OnCameraIdleListener
  * This allows the user to do some custom task after the ClusterManager re-renders the markers
  */
-public class CachedClusterManager extends ClusterManager<MapClusterItem> {
+public class CachedClusterManager<T extends MapClusterItem> extends ClusterManager<T> {
 
     private @Nullable GoogleMap.OnCameraIdleListener cameraIdleListener;
 

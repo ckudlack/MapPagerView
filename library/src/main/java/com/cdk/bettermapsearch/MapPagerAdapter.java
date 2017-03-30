@@ -19,9 +19,10 @@ import java.util.List;
  *
  * @param <VH> The class type of your custom ViewHolder
  */
-public abstract class MapPagerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+@SuppressWarnings("WeakerAccess")
+public abstract class MapPagerAdapter<T extends MapClusterItem, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    private List<MapClusterItem> backingList = new ArrayList<>();
+    private List<T> backingList = new ArrayList<>();
     private SparseArray<ViewCreatedCallback> callbackMap = new SparseArray<>();
 
     public MapPagerAdapter() {
@@ -68,16 +69,16 @@ public abstract class MapPagerAdapter<VH extends RecyclerView.ViewHolder> extend
         return backingList.get(index).getPosition();
     }
 
-    public final void updateItems(List<? extends MapClusterItem> items) {
+    public final void updateItems(List<T> items) {
         this.backingList.clear();
         this.backingList.addAll(items);
     }
 
-    public int getPositionOfItem(MapClusterItem item) {
+    public int getPositionOfItem(T item) {
         return backingList.indexOf(item);
     }
 
-    public MapClusterItem getItemAtPosition(int position) {
+    public T getItemAtPosition(int position) {
         //noinspection unchecked
         return backingList.get(position);
     }

@@ -56,14 +56,14 @@ import rx.android.schedulers.AndroidSchedulers;
  * This class encapsulates the MapView, ViewPager, and all the logic and callbacks related to linking the two
  */
 @SuppressWarnings("unused")
-public class MapPagerView extends FrameLayout implements
+public class MapPagerView<T extends MapClusterItem> extends FrameLayout implements
         OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
         RecyclerViewPager.OnPageChangedListener,
-        ClusterManager.OnClusterClickListener<MapClusterItem>,
-        ClusterManager.OnClusterInfoWindowClickListener<MapClusterItem>,
-        ClusterManager.OnClusterItemClickListener<MapClusterItem>,
-        ClusterManager.OnClusterItemInfoWindowClickListener<MapClusterItem> {
+        ClusterManager.OnClusterClickListener<T>,
+        ClusterManager.OnClusterInfoWindowClickListener<T>,
+        ClusterManager.OnClusterItemClickListener<T>,
+        ClusterManager.OnClusterItemInfoWindowClickListener<T> {
 
     private static final double DEFAULT_VIEW_PAGER_HEIGHT_PERCENT = 0.25;
     private static final int DEFAULT_MAP_CAMERA_ANIMATION_SPEED = 200;
@@ -75,29 +75,29 @@ public class MapPagerView extends FrameLayout implements
 
     @Nullable private GoogleMap googleMap;
 
-    @Nullable private MapPagerAdapter pagerAdapter;
+    @Nullable private MapPagerAdapter<T, ? extends RecyclerView.ViewHolder> pagerAdapter;
 
-    private MapClusterItem currentlySelectedItem;
+    private T currentlySelectedItem;
 
-    private MapReadyCallback mapReadyCallback;
+    private MapReadyCallback<T> mapReadyCallback;
 
     private Subscription viewSubscriber;
 
-    @Nullable private CustomMarkerRenderer markerRenderer;
-    @Nullable private CachedClusterManager clusterManager;
+    @Nullable private CustomMarkerRenderer<T> markerRenderer;
+    @Nullable private CachedClusterManager<T> clusterManager;
 
     private boolean clusteringEnabled = true;
 
     private int minClusterSize = DEFAULT_CLUSTER_SIZE;
     private int mapCameraAnimationSpeed = DEFAULT_MAP_CAMERA_ANIMATION_SPEED;
 
-    private Algorithm<MapClusterItem> algorithm;
+    private Algorithm<T> algorithm;
 
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
     @Nullable private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
-    @Nullable private ClusterManager.OnClusterItemClickListener<MapClusterItem> customClusterItemClickListener;
-    @Nullable private ClusterManager.OnClusterClickListener<MapClusterItem> customClusterClickListener;
+    @Nullable private ClusterManager.OnClusterItemClickListener<T> customClusterItemClickListener;
+    @Nullable private ClusterManager.OnClusterClickListener<T> customClusterClickListener;
     @Nullable private GoogleMap.OnCameraIdleListener customCameraIdleListener;
     //endregion
 
@@ -149,7 +149,7 @@ public class MapPagerView extends FrameLayout implements
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         // Do some map stuff
-        clusterManager = new CachedClusterManager(getContext(), googleMap, customCameraIdleListener);
+        clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         clusterManager.setAlgorithm(algorithm);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setMinClusterSize(minClusterSize);
@@ -174,7 +174,7 @@ public class MapPagerView extends FrameLayout implements
     }
 
     @Override
-    public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
+    public boolean onClusterClick(Cluster<T> cluster) {
         if (markerRenderer == null) {
             return true;
         }
@@ -211,12 +211,12 @@ public class MapPagerView extends FrameLayout implements
     }
 
     @Override
-    public void onClusterInfoWindowClick(Cluster<MapClusterItem> cluster) {
+    public void onClusterInfoWindowClick(Cluster<T> cluster) {
         // no-op
     }
 
     @Override
-    public boolean onClusterItemClick(MapClusterItem clusterItem) {
+    public boolean onClusterItemClick(T clusterItem) {
         if (markerRenderer == null || pagerAdapter == null) {
             return false;
         }
@@ -235,7 +235,7 @@ public class MapPagerView extends FrameLayout implements
     }
 
     @Override
-    public void onClusterItemInfoWindowClick(MapClusterItem t) {
+    public void onClusterItemInfoWindowClick(T t) {
         // no-op
     }
 
@@ -247,7 +247,7 @@ public class MapPagerView extends FrameLayout implements
             return;
         }
 
-        MapClusterItem clusterItem = pagerAdapter.getItemAtPosition(position);
+        T clusterItem = pagerAdapter.getItemAtPosition(position);
         clusterItem.setIsSelected(true);
 
         // the old item
@@ -267,7 +267,7 @@ public class MapPagerView extends FrameLayout implements
         mapView.onCreate(savedInstanceState);
     }
 
-    public void getMapAsync(MapReadyCallback callback) {
+    public void getMapAsync(MapReadyCallback<T> callback) {
         this.mapReadyCallback = callback;
         mapView.getMapAsync(this);
     }
@@ -313,11 +313,11 @@ public class MapPagerView extends FrameLayout implements
         this.customMapClickListener = mapClickListener;
     }
 
-    public void setOnClusterClickListener(ClusterManager.OnClusterClickListener<MapClusterItem> clusterClickListener) {
+    public void setOnClusterClickListener(ClusterManager.OnClusterClickListener<T> clusterClickListener) {
         this.customClusterClickListener = clusterClickListener;
     }
 
-    public void setOnClusterItemClickListener(ClusterManager.OnClusterItemClickListener<MapClusterItem> clusterItemClickListener) {
+    public void setOnClusterItemClickListener(ClusterManager.OnClusterItemClickListener<T> clusterItemClickListener) {
         this.customClusterItemClickListener = clusterItemClickListener;
     }
 
@@ -458,7 +458,7 @@ public class MapPagerView extends FrameLayout implements
     }
 
     // This is called every time data is refreshed
-    public void setAdapter(MapPagerAdapter adapter) {
+    public void setAdapter(MapPagerAdapter<T, ? extends RecyclerView.ViewHolder> adapter) {
         if (pagerAdapter == null) {
             viewPager.setAdapter(adapter);
         } else {
@@ -467,50 +467,47 @@ public class MapPagerView extends FrameLayout implements
         this.pagerAdapter = adapter;
     }
 
-    public void updateMapItems(@NonNull List<? extends MapClusterItem> clusterItems, boolean groupItemsByNearestNeighbor) {
+    public void updateMapItems(@NonNull List<T> clusterItems, boolean groupItemsByNearestNeighbor) {
         if (clusterManager == null || pagerAdapter == null) {
             return;
         }
 
         clusterManager.clearItems();
-        // Can't use .addAll() with wildcard
-        for (MapClusterItem clusterItem : clusterItems) {
-            clusterManager.addItem(clusterItem);
-        }
+        clusterManager.addItems(clusterItems);
         clusterManager.cluster();
 
-        final List<? extends MapClusterItem> items = groupItemsByNearestNeighbor ? getClosestNeighborsList() : clusterItems;
+        final List<T> items = groupItemsByNearestNeighbor ? getClosestNeighborsList() : clusterItems;
         pagerAdapter.updateItems(items);
     }
 
-    private List<MapClusterItem> getClosestNeighborsList() {
-        List<MapClusterItem> processedList = new ArrayList<>();
+    private List<T> getClosestNeighborsList() {
+        List<T> processedList = new ArrayList<>();
 
-        final Set<? extends Cluster<MapClusterItem>> clusters = algorithm.getClusters(12.5);
-        final List<Cluster<MapClusterItem>> closestClusters = getClosestClusterNeighbors(clusters);
+        final Set<? extends Cluster<T>> clusters = algorithm.getClusters(12.5);
+        final List<Cluster<T>> closestClusters = getClosestClusterNeighbors(clusters);
 
-        for (Cluster<MapClusterItem> cluster : closestClusters) {
+        for (Cluster<T> cluster : closestClusters) {
             processedList.addAll(cluster.getItems());
         }
         return processedList;
     }
 
-    private List<Cluster<MapClusterItem>> getClosestClusterNeighbors(Set<? extends Cluster<MapClusterItem>> clusters) {
+    private List<Cluster<T>> getClosestClusterNeighbors(Set<? extends Cluster<T>> clusters) {
         if (clusters.size() == 0) {
             return new ArrayList<>();
         }
 
-        List<Cluster<MapClusterItem>> startList = new ArrayList<>(clusters.size());
+        List<Cluster<T>> startList = new ArrayList<>(clusters.size());
         startList.addAll(clusters);
 
-        List<Cluster<MapClusterItem>> processedList = new ArrayList<>(clusters.size());
+        List<Cluster<T>> processedList = new ArrayList<>(clusters.size());
         processedList.add(startList.get(0));
 
         // For each cluster, find the next closest cluster to it
         for (int i = 0; i < clusters.size(); i++) {
-            final List<Cluster<MapClusterItem>> subList = startList.subList(Math.min(i + 1, clusters.size()), clusters.size());
+            final List<Cluster<T>> subList = startList.subList(Math.min(i + 1, clusters.size()), clusters.size());
             if (subList.size() > 0) {
-                Collections.sort(subList, new MapClusterItemComparator(startList.get(i)));
+                Collections.sort(subList, new MapClusterItemComparator<>(startList.get(i)));
                 // add the next nearest neighbor to the list
                 processedList.add(subList.get(0));
             }
@@ -596,11 +593,11 @@ public class MapPagerView extends FrameLayout implements
         this.minClusterSize = size;
     }
 
-    public void setAlgorithm(Algorithm<MapClusterItem> algorithm) {
+    public void setAlgorithm(Algorithm<T> algorithm) {
         this.algorithm = algorithm;
     }
 
-    public Algorithm<MapClusterItem> getAlgorithm() {
+    public Algorithm<T> getAlgorithm() {
         return algorithm;
     }
     //endregion

@@ -11,6 +11,7 @@ import rx.Subscriber;
 /**
  * Custom Observer that will fire a subscriber when all views are drawn the in the ViewPager
  */
+@SuppressWarnings("WeakerAccess")
 public class ViewCreatedObserver implements Observable.OnSubscribe<Void> {
     private MapPagerAdapter adapter;
     private int viewPosition;
