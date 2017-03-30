@@ -6,7 +6,7 @@ A MapView combined with a ViewPager for ultimate search efficiency! Can be used 
 MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you can present an uncluttered, easily searchable interface to your users
 
 ## How to use
-1. Add MapPagerView into your layout xml:
+1. Add MapPagerView into your layout xml. When you inflate it, remember to include the type
 
   ```
   <com.cdk.bettermapsearch.MapPagerView
@@ -15,7 +15,7 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
         android:layout_height="match_parent"/>
 ```
   ```
-  MapPagerView mapPagerView = findViewById(R.id.map_pager);
+  MapPagerView<MyCustomModelClass> mapPagerView = findViewById(R.id.map_pager);
   mapPagerView.onCreate(savedInstanceState);
   mapPagerView.getMapAsync(this);
   ```
