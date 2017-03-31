@@ -25,6 +25,7 @@ import com.cdk.bettermapsearch.clustering.CachedClusterManager;
 import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -572,6 +573,17 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         } catch (Exception e) {
             // In case the map initialization is not quite there yet
             new Handler().postDelayed(() -> googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, mapView.getWidth(), mapView.getHeight(), padding)), 500);
+        }
+    }
+
+    public void moveCamera(CameraUpdate cameraUpdate) {
+        try {
+            if (googleMap != null) {
+                googleMap.moveCamera(cameraUpdate);
+            }
+        } catch (Exception e) {
+            // In case the map initialization is not quite there yet
+            new Handler().postDelayed(() -> googleMap.moveCamera(cameraUpdate), 500);
         }
     }
 
