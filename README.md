@@ -15,7 +15,7 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
         android:layout_height="match_parent"/>
 ```
   ```
-  MapPagerView<MyCustomModelClass> mapPagerView = findViewById(R.id.map_pager);
+  MapPagerView<MyCustomModelClass> mapPagerView = (MapPagerView<MyCustomModelClass>) findViewById(R.id.map_pager);
   mapPagerView.onCreate(savedInstanceState);
   mapPagerView.getMapAsync(this);
   ```
@@ -30,13 +30,34 @@ public CustomMarkerRenderer onMapReady(GoogleMap googleMap, CachedClusterManager
 }
 ```
 
-4. Use the `updateItems()` method to populate data on the map.
+4. Use the `updateItems()` method to populate data on the map. This needs to be called _after_ the MarkerRenderer is returned. If you want to use nearest-neighbor processing on the list, pass `true` as the second argument in `updateItems()`
 
 ## Customizability
 * The abstract class `CustomMarkerRenderer` controls the logic of when to show items & clusters as selected, you'll just need to implement the 4 abstract methods that handle the UI of the markers
 * The abstract class `MapPagerAdapter` controls the ViewPager logic, it requires 2 types: your data model class and the ViewHolder type
-* Obviously you'll also need to create your own ViewHolder
+* Obviously you'll also need to create your own ViewHolder, just like you normally would for an Adapter
 * MapPager view has a method `setClusteringEnabled(boolean)` that allows you to turn marker clustering on and off
+
+## Callbacks
+You can set your own listeners for all these callbacks, if you so choose:
+```
+    GoogleMap.OnMapClickListener
+    GoogleMap.OnInfoWindowClickListener
+    GoogleMap.InfoWindowAdapter
+    ClusterManager.OnClusterItemClickListener<MyCustomModelClass>
+    ClusterManager.OnClusterClickListener<MyCustomModelClass>
+    GoogleMap.OnCameraIdleListener
+    RecyclerViewPager.OnPageChangedListener
+```
+Just make sure to call the default implementation of the callback in `MapPagerView` if you still want the default functionality:
+```
+@Override
+public boolean onClusterClick(Cluster<MyCustomModelClass> cluster) {
+    // Whatever logic you want to do goes in here
+    
+    return mapPagerView.onClusterClick(cluster); // add this for default functionality
+}
+```
 
 ## Related Links
 * [Google MapsUtils](https://developers.google.com/maps/documentation/android-api/utility/)
