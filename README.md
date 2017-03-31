@@ -24,7 +24,7 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 
 ```
 @Override
-public CustomMarkerRenderer onMapReady(GoogleMap googleMap, CachedClusterManager clusterManager) {
+public MapPagerMarkerRenderer<MyCustomModelClass> onMapReady(GoogleMap googleMap, CachedClusterManager clusterManager) {
     // You'll need to return your custom implmentation of MarkerRenderer and pass it back to the MapPagerView
     return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
 }
@@ -33,7 +33,7 @@ public CustomMarkerRenderer onMapReady(GoogleMap googleMap, CachedClusterManager
 4. Use the `updateItems()` method to populate data on the map. This needs to be called _after_ the MarkerRenderer is returned. If you want to use nearest-neighbor processing on the list, pass `true` as the second argument in `updateItems()`
 
 ## Customizability
-* The abstract class `CustomMarkerRenderer` controls the logic of when to show items & clusters as selected, you'll just need to implement the 4 abstract methods that handle the UI of the markers
+* The abstract class `MapPagerMarkerRenderer` controls the logic of when to show items & clusters as selected, you'll just need to implement the 4 abstract methods that handle the UI of the markers
 * The abstract class `MapPagerAdapter` controls the ViewPager logic, it requires 2 types: your data model class and the ViewHolder type
 * Obviously you'll also need to create your own ViewHolder, just like you normally would for an Adapter
 * MapPager view has a method `setClusteringEnabled(boolean)` that allows you to turn marker clustering on and off

@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.cdk.bettermapsearch.MapPagerAdapter;
 import com.cdk.bettermapsearch.MapPagerView;
-import com.cdk.bettermapsearch.clustering.CachedClusterManager;
-import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
+import com.cdk.bettermapsearch.clustering.MapPagerClusterManager;
+import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer;
 import com.cdk.bettermapsearch.example.R;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
 import com.cdk.bettermapsearch.models.ItemModel;
@@ -106,7 +106,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
     }
 
     @Override
-    public CustomMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, CachedClusterManager<LatLngModel> clusterManager) {
+    public MapPagerMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, MapPagerClusterManager<LatLngModel> clusterManager) {
         String json = null;
         try {
             json = FileUtils.getStringFromFile(getContext(), "sample_locations.json");
@@ -126,7 +126,7 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
     //region example classes
 
-    public static class MyMarkerRenderer extends CustomMarkerRenderer<LatLngModel> {
+    public static class MyMarkerRenderer extends MapPagerMarkerRenderer<LatLngModel> {
 
         private TextView clusterText;
         private TextView clusterItemText;

@@ -21,8 +21,8 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 
-import com.cdk.bettermapsearch.clustering.CachedClusterManager;
-import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
+import com.cdk.bettermapsearch.clustering.MapPagerClusterManager;
+import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer;
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.cdk.bettermapsearch.interfaces.MapReadyCallback;
 import com.google.android.gms.maps.CameraUpdate;
@@ -84,8 +84,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     private Subscription viewSubscriber;
 
-    @Nullable private CustomMarkerRenderer<T> markerRenderer;
-    @Nullable private CachedClusterManager<T> clusterManager;
+    @Nullable private MapPagerMarkerRenderer<T> markerRenderer;
+    @Nullable private MapPagerClusterManager<T> clusterManager;
 
     private boolean clusteringEnabled = true;
 
@@ -151,7 +151,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         // Do some map stuff
-        clusterManager = new CachedClusterManager<>(getContext(), googleMap, customCameraIdleListener);
+        clusterManager = new MapPagerClusterManager<>(getContext(), googleMap, customCameraIdleListener);
         clusterManager.setAlgorithm(algorithm);
         markerRenderer = mapReadyCallback.onMapReady(googleMap, clusterManager);
         markerRenderer.setMinClusterSize(minClusterSize);

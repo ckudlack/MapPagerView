@@ -1,7 +1,7 @@
 package com.cdk.bettermapsearch.interfaces;
 
-import com.cdk.bettermapsearch.clustering.CachedClusterManager;
-import com.cdk.bettermapsearch.clustering.CustomMarkerRenderer;
+import com.cdk.bettermapsearch.clustering.MapPagerClusterManager;
+import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer;
 import com.google.android.gms.maps.GoogleMap;
 
 /**
@@ -11,7 +11,7 @@ public interface MapReadyCallback<T extends MapClusterItem> {
     /**
      * @param googleMap      This is required for the MarkerRenderer
      * @param clusterManager Also required for the MarkerRenderer
-     * @return the user's custom MarkerRenderer that extends CustomMarkerRenderer
+     * @return the user's custom MarkerRenderer that extends MapPagerMarkerRenderer
      */
-    CustomMarkerRenderer<T> onMapReady(GoogleMap googleMap, CachedClusterManager<T> clusterManager);
+    MapPagerMarkerRenderer<T> onMapReady(GoogleMap googleMap, MapPagerClusterManager<T> clusterManager);
 }

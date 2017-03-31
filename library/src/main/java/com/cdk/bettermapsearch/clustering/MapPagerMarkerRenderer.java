@@ -21,7 +21,7 @@ import java.util.Collection;
  * This class handles the underlying logic of selecting and unselecting markers and clusters,
  * but leaves the creation of UI to the user
  */
-public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
+public abstract class MapPagerMarkerRenderer<T extends MapClusterItem> extends DefaultClusterRenderer<T> {
 
     protected Context context;
 
@@ -33,7 +33,7 @@ public abstract class CustomMarkerRenderer<T extends MapClusterItem> extends Def
 
     private boolean clusteringEnabled = true;
 
-    public CustomMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+    public MapPagerMarkerRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
 
