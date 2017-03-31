@@ -24,7 +24,7 @@ MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you c
 
 ```
 @Override
-public MapPagerMarkerRenderer<MyCustomModelClass> onMapReady(GoogleMap googleMap, CachedClusterManager clusterManager) {
+public MapPagerMarkerRenderer<MyCustomModelClass> onMapReady(GoogleMap googleMap, MapPagerClusterManager<MyCustomModelClass> clusterManager) {
     // You'll need to return your custom implmentation of MarkerRenderer and pass it back to the MapPagerView
     return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
 }
