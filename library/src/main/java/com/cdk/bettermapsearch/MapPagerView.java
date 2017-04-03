@@ -228,6 +228,11 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         // to prevent the extra call to OnPageChanged
         fromClusterItemClick = true;
 
+        if (currentlySelectedItem != null) {
+            currentlySelectedItem.setIsSelected(false);
+            currentlySelectedItem.setIsViewed(true);
+        }
+
         markerRenderer.renderClusterItemAsSelected(clusterItem);
 
         currentlySelectedItem = clusterItem;
