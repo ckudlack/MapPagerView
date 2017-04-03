@@ -158,7 +158,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         setClusteringEnabled(clusteringEnabled);
         clusterManager.setRenderer(markerRenderer);
 
-        clusterManager.setOnClusterClickListener(customClusterItemClickListener == null ? this : customClusterClickListener);
+        clusterManager.setOnClusterClickListener(customClusterClickListener == null ? this : customClusterClickListener);
         clusterManager.setOnClusterInfoWindowClickListener(this);
         clusterManager.setOnClusterItemClickListener(customClusterItemClickListener == null ? this : customClusterItemClickListener);
         clusterManager.setOnClusterItemInfoWindowClickListener(this);
