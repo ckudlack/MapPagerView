@@ -94,6 +94,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     private Algorithm<T> algorithm;
 
+    private boolean fromClusterItemClick = false;
+
     @Nullable private GoogleMap.OnMapClickListener customMapClickListener;
     @Nullable private GoogleMap.OnInfoWindowClickListener customInfoWindowClickListener;
     @Nullable private GoogleMap.InfoWindowAdapter customInfoWindowAdapter;
@@ -223,6 +225,9 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
             return false;
         }
 
+        // to prevent the extra call to OnPageChanged
+        fromClusterItemClick = true;
+
         markerRenderer.renderClusterItemAsSelected(clusterItem);
 
         currentlySelectedItem = clusterItem;
@@ -246,6 +251,11 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     @Override
     public void OnPageChanged(int size, int position) {
         if (googleMap == null || clusterManager == null || markerRenderer == null || pagerAdapter == null) {
+            return;
+        }
+
+        if (fromClusterItemClick) {
+            fromClusterItemClick = false;
             return;
         }
 
