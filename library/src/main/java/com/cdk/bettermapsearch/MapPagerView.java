@@ -276,6 +276,10 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
         // update
         currentlySelectedItem = clusterItem;
+
+        if (customOnPageChangedListener != null) {
+            customOnPageChangedListener.OnPageChanged(size, position);
+        }
     }
 
     //region wrappers for MapView lifecycle
@@ -307,7 +311,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     public void onDestroy() {
         mapView.onDestroy();
-        viewPager.removeOnPageChangedListener(customOnPageChangedListener == null ? this : customOnPageChangedListener);
+        viewPager.removeOnPageChangedListener(this);
     }
 
     public void onLowMemory() {
@@ -556,8 +560,6 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     public void setCustomOnPageChangedListener(@Nullable RecyclerViewPager.OnPageChangedListener customOnPageChangedListener) {
         this.customOnPageChangedListener = customOnPageChangedListener;
-        viewPager.removeOnPageChangedListener(this);
-        viewPager.addOnPageChangedListener(customOnPageChangedListener);
     }
 
     //endregion
