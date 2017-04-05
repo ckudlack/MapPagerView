@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">BetterMapSearch</string>
+    <string name="maps_api_key"> AIzaSyCnZumZ5aZ4yc4WScHmtjCYCfFo2u6wnm8 </string>
+    <string name="cluster_text">%d items\nin cluster</string>
+    <string name="cluster_item_text">Item %d</string>
+</resources>
