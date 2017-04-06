@@ -11,7 +11,7 @@ import rx.Subscriber
 /**
  * Custom Observer that will fire a subscriber when all views are drawn the in the ViewPager
  */
-class ViewCreatedObserver(private val adapter: MapPagerAdapter<*, *>, private val viewPosition: Int, private val viewPager: RecyclerViewPager) : Observable.OnSubscribe<Void> {
+class ViewCreatedObserver(private val adapter: MapPagerAdapter<*, *>?, private val viewPosition: Int, private val viewPager: RecyclerViewPager) : Observable.OnSubscribe<Void> {
 
     override fun call(subscriber: Subscriber<in Void>) {
         val callback = object : ViewCreatedCallback {
@@ -22,7 +22,7 @@ class ViewCreatedObserver(private val adapter: MapPagerAdapter<*, *>, private va
             }
         }
 
-        adapter.setCallback(viewPosition, callback)
+        adapter?.setCallback(viewPosition, callback)
         viewPager.visibility = View.INVISIBLE
     }
 }

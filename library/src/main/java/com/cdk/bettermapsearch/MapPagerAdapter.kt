@@ -18,8 +18,8 @@ import com.google.android.gms.maps.model.LatLng
 @Suppress("unused")
 abstract class MapPagerAdapter<T : MapClusterItem, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
 
-    var backingList: List<T> = listOf()
-    var callbackMap: SparseArray<ViewCreatedCallback> = SparseArray(3)
+    val backingList = mutableListOf<T>()
+    val callbackMap: SparseArray<ViewCreatedCallback> = SparseArray(3)
 
     abstract override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): VH
 
@@ -29,9 +29,7 @@ abstract class MapPagerAdapter<T : MapClusterItem, VH : RecyclerView.ViewHolder>
         holder.itemView.visibility = View.VISIBLE
     }
 
-    override fun getItemCount(): Int {
-        return backingList.size
-    }
+    override fun getItemCount(): Int = backingList.size
 
     @CallSuper
     override fun onViewAttachedToWindow(holder: VH) {
@@ -44,18 +42,15 @@ abstract class MapPagerAdapter<T : MapClusterItem, VH : RecyclerView.ViewHolder>
         viewCreatedCallback?.viewCreated(position)
     }
 
-    fun setCallback(position: Int, callback: ViewCreatedCallback) {
-        callbackMap.put(position, callback)
-    }
+    fun setCallback(position: Int, callback: ViewCreatedCallback) = callbackMap.put(position, callback)
 
     fun clearCallbacks() = callbackMap.clear()
 
-    fun getItemPositionOnMap(index: Int): LatLng {
-        return backingList[index].position
-    }
+    fun getItemPositionOnMap(index: Int): LatLng = backingList[index].position
 
     fun updateItems(items: List<T>) {
-        backingList = items
+        backingList.clear()
+        backingList.addAll(items)
     }
 
     fun getPositionOfItem(item: T?): Int = backingList.indexOf(item)

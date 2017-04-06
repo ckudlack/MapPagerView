@@ -143,19 +143,17 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
     }
 
     override fun onClusterItemClick(clusterItem: T): Boolean {
-        if (pagerAdapter != null) {
-            fromClusterItemClick = true
+        fromClusterItemClick = true
 
-            currentlySelectedItem?.isSelected = false
-            currentlySelectedItem?.isViewed = true
+        currentlySelectedItem?.isSelected = false
+        currentlySelectedItem?.isViewed = true
 
-            markerRenderer?.renderClusterItemAsSelected(clusterItem)
+        markerRenderer?.renderClusterItemAsSelected(clusterItem)
 
-            clusterItem.isSelected = true
-            currentlySelectedItem = clusterItem
+        clusterItem.isSelected = true
+        currentlySelectedItem = clusterItem
 
-            if (map_view_pager.visibility != View.VISIBLE) showViewPager() else map_view_pager.scrollToPosition(pagerAdapter!!.getPositionOfItem(clusterItem))
-        }
+        if (map_view_pager.visibility != View.VISIBLE) showViewPager() else map_view_pager.scrollToPosition(pagerAdapter?.getPositionOfItem(clusterItem) ?: map_view_pager.currentPosition)
         return false
     }
 
@@ -237,28 +235,26 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
     fun showViewPager() {
         pagerAdapter?.clearCallbacks()
 
-        if (pagerAdapter != null) {
-            val position = if (currentlySelectedItem != null) pagerAdapter!!.getPositionOfItem(currentlySelectedItem!!) else map_view_pager.currentPosition
-            val observables = (Math.max(position - 1, 0)..Math.min(pagerAdapter!!.itemCount - 1, position + 1))
-                    .filter { map_view_pager.findViewHolderForAdapterPosition(it) == null }
-                    .map { Observable.create(ViewCreatedObserver(pagerAdapter!!, it, map_view_pager)) }
+        val position = pagerAdapter?.getPositionOfItem(currentlySelectedItem!!) ?: map_view_pager.currentPosition
+        val observables = (Math.max(position - 1, 0)..Math.min(pagerAdapter!!.itemCount - 1, position + 1))
+                .filter { map_view_pager.findViewHolderForAdapterPosition(it) == null }
+                .map { Observable.create(ViewCreatedObserver(pagerAdapter, it, map_view_pager)) }
 
-            if (observables.isNotEmpty()) {
-                viewSubscriber?.unsubscribe()
-                viewSubscriber = observables.combineLatest { it }
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                                onNext = {
-                                    pagerAdapter?.clearCallbacks()
-                                    animateViewPagerVisible()
-                                }
-                        )
-            } else {
-                animateViewPagerVisible()
-            }
-            map_view_pager.scrollToPosition(pagerAdapter!!.getPositionOfItem(currentlySelectedItem))
+        if (observables.isNotEmpty()) {
+            viewSubscriber?.unsubscribe()
+            viewSubscriber = observables.combineLatest { it }
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onNext = {
+                                pagerAdapter?.clearCallbacks()
+                                animateViewPagerVisible()
+                            }
+                    )
+        } else {
+            animateViewPagerVisible()
         }
+        map_view_pager.scrollToPosition(pagerAdapter?.getPositionOfItem(currentlySelectedItem) ?: map_view_pager.currentPosition)
     }
 
     fun dismissViewPager() {
@@ -273,12 +269,10 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
     }
 
     fun animateViewPagerVisible() {
-        if (pagerAdapter != null) {
-            map_view_pager.visibility = View.VISIBLE
+        map_view_pager.visibility = View.VISIBLE
 
-            val pos = if (currentlySelectedItem != null) pagerAdapter!!.getPositionOfItem(currentlySelectedItem) else map_view_pager.currentPosition
-            startViewPagerTranslateAnimation(pos, map_view_pager.measuredHeight.toFloat(), 0f, OvershootInterpolator(0.3f), true)
-        }
+        val pos = pagerAdapter?.getPositionOfItem(currentlySelectedItem) ?: map_view_pager.currentPosition
+        startViewPagerTranslateAnimation(pos, map_view_pager.measuredHeight.toFloat(), 0f, OvershootInterpolator(0.3f), true)
     }
 
     fun startViewPagerTranslateAnimation(position: Int, fromYDelta: Float, toYDelta: Float, interpolator: Interpolator, animateToVisible: Boolean) {
