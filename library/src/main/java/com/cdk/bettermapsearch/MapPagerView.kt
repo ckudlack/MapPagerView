@@ -192,45 +192,31 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
 
     //region wrappers for MapView lifecycle
 
-    fun onCreate(savedInstanceState: Bundle?) {
-        map_view.onCreate(savedInstanceState)
-    }
+    fun onCreate(savedInstanceState: Bundle?) = map_view.onCreate(savedInstanceState)
 
     fun getMapAsync(callback: MapReadyCallback<T>) {
         this.mapReadyCallback = callback
         map_view.getMapAsync(this)
     }
 
-    fun onResume() {
-        map_view.onResume()
-    }
+    fun onResume() = map_view.onResume()
 
-    fun onStart() {
-        map_view.onStart()
-    }
+    fun onStart() = map_view.onStart()
 
-    fun onPause() {
-        map_view.onPause()
-    }
+    fun onPause() = map_view.onPause()
 
-    fun onStop() {
-        map_view.onStop()
-    }
+    fun onStop() = map_view.onStop()
 
     fun onDestroy() {
         map_view.onDestroy()
         map_view_pager.removeOnPageChangedListener(this)
     }
 
-    fun onLowMemory() {
-        map_view.onLowMemory()
-    }
+    fun onLowMemory() = map_view.onLowMemory()
 
     //endregion
 
-    fun getUISettings(): UiSettings? {
-        return googleMap?.uiSettings
-    }
+    fun getUISettings(): UiSettings? = googleMap?.uiSettings
 
     fun showViewPager() {
         pagerAdapter?.clearCallbacks()
@@ -369,17 +355,13 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
     }
 
     //region ViewPager customization
-    fun setViewPagerPadding(left: Int, top: Int, right: Int, bottom: Int) {
-        map_view_pager.setPadding(left, top, right, bottom)
-    }
+    fun setViewPagerPadding(left: Int, top: Int, right: Int, bottom: Int) = map_view_pager.setPadding(left, top, right, bottom)
 
     fun setViewPagerHeightPercent(percent: Double) {
         map_view_pager.layoutParams.height = (map_view.measuredHeight * percent).toInt()
     }
 
-    fun getCurrentViewPagerPosition(): Int {
-        return map_view_pager.currentPosition
-    }
+    fun getCurrentViewPagerPosition(): Int = map_view_pager.currentPosition
 
     fun scrollViewPagerToPosition(position: Int, smoothScroll: Boolean) {
         if (smoothScroll) {
@@ -397,13 +379,9 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
 
     //region Google Map Customization
 
-    fun getMapBounds(): LatLngBounds? {
-        return googleMap?.projection?.visibleRegion?.latLngBounds
-    }
+    fun getMapBounds(): LatLngBounds? = googleMap?.projection?.visibleRegion?.latLngBounds
 
-    fun addMarker(markerOptions: MarkerOptions): Marker? {
-        return googleMap?.addMarker(markerOptions)
-    }
+    fun addMarker(markerOptions: MarkerOptions): Marker? = googleMap?.addMarker(markerOptions)
 
     fun moveCameraToBounds(bounds: LatLngBounds, padding: Int) {
         try {
@@ -428,9 +406,7 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
         this.mapCameraAnimationSpeed = cameraAnimationSpeed
     }
 
-    fun getCameraPosition(): CameraPosition? {
-        return googleMap?.cameraPosition
-    }
+    fun getCameraPosition(): CameraPosition? = googleMap?.cameraPosition
     //endregion
 
     //region cluster customization
@@ -448,8 +424,6 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
         this.algorithm = algorithm
     }
 
-    fun getAlgorithm(): Algorithm<T> {
-        return algorithm
-    }
+    fun getAlgorithm(): Algorithm<T> = algorithm
     //endregion
 }
