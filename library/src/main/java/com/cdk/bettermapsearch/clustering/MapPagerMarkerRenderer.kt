@@ -13,7 +13,6 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
 
 
-
 /**
  * This class handles the underlying logic of selecting and unselecting markers and clusters,
  * but leaves the creation of UI to the user
@@ -158,10 +157,8 @@ abstract class MapPagerMarkerRenderer<T : MapClusterItem>(protected var context:
     fun renderPreviousClusterItemAsUnselected() {
         val marker: Marker? = getMarker(previousClusterItem)
 
-        if (previousClusterItem != null) {
-            (previousClusterItem as T).isViewed = true
-            (previousClusterItem as T).isSelected = false
-        }
+        previousClusterItem?.isViewed = true
+        previousClusterItem?.isSelected = false
 
         if (marker != null) {
             setupClusterItemView(previousClusterItem, false)

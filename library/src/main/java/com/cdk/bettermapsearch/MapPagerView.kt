@@ -350,8 +350,7 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
             return listOf()
         }
 
-        val startList = ArrayList<Cluster<T>>(clusters.size)
-        startList.addAll(clusters)
+        val startList = ArrayList<Cluster<T>>(clusters)
 
         val processedList = ArrayList<Cluster<T>>(clusters.size)
         processedList.add(startList[0])
