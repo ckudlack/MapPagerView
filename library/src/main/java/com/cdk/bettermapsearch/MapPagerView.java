@@ -78,7 +78,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     @Nullable private MapPagerAdapter<T, ? extends RecyclerView.ViewHolder> pagerAdapter;
 
-    private T currentlySelectedItem;
+    @Nullable private T currentlySelectedItem;
 
     private MapReadyCallback<T> mapReadyCallback;
 
@@ -268,8 +268,10 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
         clusterItem.setIsSelected(true);
 
         // the old item
-        currentlySelectedItem.setIsSelected(false);
-        currentlySelectedItem.setIsViewed(true);
+        if (currentlySelectedItem != null) {
+            currentlySelectedItem.setIsSelected(false);
+            currentlySelectedItem.setIsViewed(true);
+        }
 
         LatLng itemPosition = !markerRenderer.renderClusterItemAsSelected(clusterItem) ? markerRenderer.getClusterMarkerPosition(clusterManager.getClusterMarkerCollection().getMarkers(), clusterItem) : pagerAdapter.getItemPositionOnMap(position);
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(itemPosition, googleMap.getCameraPosition().zoom)), mapCameraAnimationSpeed, null);
