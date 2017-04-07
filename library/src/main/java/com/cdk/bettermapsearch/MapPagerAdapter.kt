@@ -6,8 +6,8 @@ import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import com.cdk.bettermapsearch.interfaces.MapClusterItem
-import com.cdk.bettermapsearch.interfaces.ViewCreatedCallback
 import com.google.android.gms.maps.model.LatLng
+import com.jakewharton.rxrelay.BehaviorRelay
 
 /**
  * This class encapsulates the handling of the list that backs both the ViewPager and the marker clustering
@@ -19,7 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 abstract class MapPagerAdapter<T : MapClusterItem, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
 
     val backingList = mutableListOf<T>()
-    val callbackMap: SparseArray<ViewCreatedCallback> = SparseArray(3)
+    val callbackMap: SparseArray<BehaviorRelay<Any>> = SparseArray(3)
 
     abstract override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): VH
 
@@ -39,10 +39,13 @@ abstract class MapPagerAdapter<T : MapClusterItem, VH : RecyclerView.ViewHolder>
 
         val position = holder.adapterPosition
         val viewCreatedCallback = callbackMap.get(position)
-        viewCreatedCallback?.viewCreated(position)
+        viewCreatedCallback?.call("attached")
     }
 
-    fun setCallback(position: Int, callback: ViewCreatedCallback) = callbackMap.put(position, callback)
+    fun setCallback(position: Int, callback: BehaviorRelay<Any>): BehaviorRelay<Any> {
+        callbackMap.put(position, callback)
+        return callback
+    }
 
     fun clearCallbacks() = callbackMap.clear()
 

@@ -24,12 +24,12 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.algo.Algorithm
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm
+import com.jakewharton.rxrelay.BehaviorRelay
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
 import kotlinx.android.synthetic.main.map_pager.view.*
 import rx.Observable
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
-import rx.lang.kotlin.combineLatest
 import rx.lang.kotlin.subscribeBy
 import java.util.*
 
@@ -220,13 +220,14 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
         pagerAdapter?.clearCallbacks()
 
         val position = pagerAdapter?.getPositionOfItem(currentlySelectedItem!!) ?: map_view_pager.currentPosition
-        val observables = (Math.max(position - 1, 0)..Math.min(pagerAdapter!!.itemCount - 1, position + 1))
+        val relays = (Math.max(position - 1, 0)..Math.min(pagerAdapter!!.itemCount - 1, position + 1))
                 .filter { map_view_pager.findViewHolderForAdapterPosition(it) == null }
-                .map { Observable.create(ViewCreatedObserver(pagerAdapter, it, map_view_pager)) }
+                .map { pagerAdapter?.setCallback(it, BehaviorRelay.create<Any>()) }
 
-        if (observables.isNotEmpty()) {
+        map_view_pager.visibility = View.INVISIBLE
+        if (relays.isNotEmpty()) {
             viewSubscriber?.unsubscribe()
-            viewSubscriber = observables.combineLatest { it }
+            viewSubscriber = Observable.combineLatest(relays, { it })
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
