@@ -57,13 +57,13 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
     private var fromClusterItemClick = false
     private var clusteringEnabled = true
 
-    private var customMapClickListener: GoogleMap.OnMapClickListener? = null
-    private var customInfoWindowClickListener: GoogleMap.OnInfoWindowClickListener? = null
-    private var customInfoWindowAdapter: GoogleMap.InfoWindowAdapter? = null
-    private var customClusterItemClickListener: ClusterManager.OnClusterItemClickListener<T>? = null
-    private var customClusterClickListener: ClusterManager.OnClusterClickListener<T>? = null
-    private var customCameraIdleListener: GoogleMap.OnCameraIdleListener? = null
-    private var customOnPageChangedListener: RecyclerViewPager.OnPageChangedListener? = null
+    var customMapClickListener: GoogleMap.OnMapClickListener? = null
+    var customInfoWindowClickListener: GoogleMap.OnInfoWindowClickListener? = null
+    var customInfoWindowAdapter: GoogleMap.InfoWindowAdapter? = null
+    var customClusterItemClickListener: ClusterManager.OnClusterItemClickListener<T>? = null
+    var customClusterClickListener: ClusterManager.OnClusterClickListener<T>? = null
+    var customCameraIdleListener: GoogleMap.OnCameraIdleListener? = null
+    var customOnPageChangedListener: RecyclerViewPager.OnPageChangedListener? = null
 
     // region constructors
     constructor(context: Context) : super(context) {
@@ -369,10 +369,6 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
         } else {
             map_view_pager.scrollToPosition(position)
         }
-    }
-
-    fun setCustomOnPageChangedListener(customOnPageChangedListener: RecyclerViewPager.OnPageChangedListener?) {
-        this.customOnPageChangedListener = customOnPageChangedListener
     }
 
     //endregion
