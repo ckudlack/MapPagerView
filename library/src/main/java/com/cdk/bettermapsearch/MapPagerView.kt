@@ -45,7 +45,7 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
 
     private var clusterManager: MapPagerClusterManager<T>? = null
     private var markerRenderer: MapPagerMarkerRenderer<T>? = null
-    private var pagerAdapter: MapPagerAdapter<T, *>? = null
+    private var pagerAdapter: MapPagerAdapter<T, out RecyclerView.ViewHolder>? = null
     private var mapReadyCallback: MapReadyCallback<T>? = null
 
     private var viewSubscriber: Subscription? = null
@@ -94,7 +94,6 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
         map_view_pager.addOnPageChangedListener(this)
         map_view_pager.setHasFixedSize(true)
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
@@ -185,7 +184,6 @@ class MapPagerView<T : MapClusterItem> : FrameLayout, OnMapReadyCallback, Google
 
     override fun onClusterInfoWindowClick(cluster: Cluster<T>) {
     }
-
 
     override fun onClusterItemInfoWindowClick(item: T) {
     }
