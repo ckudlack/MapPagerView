@@ -2,6 +2,7 @@ package com.cdk.bettermapsearch.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -11,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cdk.bettermapsearch.MapPagerAdapter;
 import com.cdk.bettermapsearch.MapPagerView;
+import com.cdk.bettermapsearch.MapPagerAdapter;
 import com.cdk.bettermapsearch.clustering.MapPagerClusterManager;
 import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer;
 import com.cdk.bettermapsearch.example.R;
@@ -59,6 +60,8 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
 
         mapPagerView.onCreate(null); // savedInstanceState crashes this sometimes
         mapPagerView.getMapAsync(this);
+
+        simulateNetworkCall();
     }
 
     @Override
@@ -105,23 +108,28 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         return boundsBuilder.build();
     }
 
+    @NonNull
     @Override
-    public MapPagerMarkerRenderer<LatLngModel> onMapReady(GoogleMap googleMap, MapPagerClusterManager<LatLngModel> clusterManager) {
-        String json = null;
-        try {
-            json = FileUtils.getStringFromFile(getContext(), "sample_locations.json");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        final ItemModel itemModel = new Gson().fromJson(json, ItemModel.class);
-
-        final List<LatLngModel> items = itemModel.getItems();
-
-        mapPagerView.updateMapItems(items, false);
-        mapPagerView.moveCameraToBounds(createBoundsFromList(items), 100);
-
+    public MapPagerMarkerRenderer<LatLngModel> onMapReady(@NonNull GoogleMap googleMap, @NonNull MapPagerClusterManager<LatLngModel> clusterManager) {
         return new MyMarkerRenderer(getContext(), googleMap, clusterManager);
+    }
+
+    private void simulateNetworkCall() {
+        mapPagerView.postDelayed(() -> {
+            String json = null;
+            try {
+                json = FileUtils.getStringFromFile(getContext(), "sample_locations.json");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            final ItemModel itemModel = new Gson().fromJson(json, ItemModel.class);
+
+            final List<LatLngModel> items = itemModel.getItems();
+
+            mapPagerView.updateMapItems(items, false);
+            mapPagerView.moveCameraToBounds(createBoundsFromList(items), 100);
+        }, 1000);
     }
 
     //region example classes
@@ -138,33 +146,34 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
             clusterText = (TextView) clusterView.findViewById(R.id.text_primary);
             clusterItemText = (TextView) View.inflate(context, R.layout.cluster_item_view, null);
 
-            clusterIconGenerator.setContentView(clusterView);
-            clusterItemIconGenerator.setContentView(clusterItemText);
+            getClusterIconGenerator().setContentView(clusterView);
+            getClusterItemIconGenerator().setContentView(clusterItemText);
         }
 
         @Override
         protected void setupClusterView(Cluster<LatLngModel> cluster, boolean isSelected) {
-            clusterText.setText(context.getResources().getString(R.string.cluster_text, cluster.getItems().size()));
-            clusterText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
+            clusterText.setText(getContext().getResources().getString(R.string.cluster_text, cluster.getItems().size()));
+            clusterText.setTextColor(ContextCompat.getColor(getContext(), isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
         protected void setupClusterItemView(LatLngModel item, boolean isSelected) {
             clusterItemText.setText(item.getName());
-            clusterItemText.setTextColor(ContextCompat.getColor(context, isSelected ? android.R.color.white : android.R.color.black));
+            clusterItemText.setTextColor(ContextCompat.getColor(getContext(), isSelected ? android.R.color.white : android.R.color.black));
         }
 
         @Override
         protected void setClusterViewBackground(boolean isSelected) {
-            clusterIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
+            getClusterIconGenerator().setColor(ContextCompat.getColor(getContext(), isSelected ? android.R.color.black : android.R.color.white));
         }
 
         @Override
         protected void setClusterItemViewBackground(boolean isSelected) {
-            clusterItemIconGenerator.setColor(ContextCompat.getColor(context, isSelected ? android.R.color.black : android.R.color.white));
+            getClusterItemIconGenerator().setColor(ContextCompat.getColor(getContext(), isSelected ? android.R.color.black : android.R.color.white));
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView title;
@@ -176,18 +185,20 @@ public class MapFragment extends Fragment implements MapReadyCallback<LatLngMode
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class MyViewPagerAdapter extends MapPagerAdapter<LatLngModel, ItemViewHolder> {
 
         public MyViewPagerAdapter() {
         }
 
         @Override
-        public void onBindViewHolder(ItemViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
             super.onBindViewHolder(holder, position);
 
             holder.title.setText(getItemAtPosition(position).getName());
         }
 
+        @NonNull
         @Override
         public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.pager_item_view, parent, false));

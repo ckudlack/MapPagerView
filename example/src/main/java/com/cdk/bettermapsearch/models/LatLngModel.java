@@ -40,20 +40,21 @@ public class LatLngModel implements MapClusterItem {
     }
 
     @Override
-    public void setIsViewed(boolean isViewed) {
-        this.isViewed = isViewed;
-    }
-
-    @Override
     public boolean isSelected() {
         return isSelected;
     }
 
-    public void setIsSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
-
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void setViewed(boolean isViewed) {
+        this.isViewed = isViewed;
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }
