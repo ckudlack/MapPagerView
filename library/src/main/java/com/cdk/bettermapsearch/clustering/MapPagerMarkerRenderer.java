@@ -2,7 +2,8 @@ package com.cdk.bettermapsearch.clustering;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.cdk.bettermapsearch.interfaces.MapClusterItem;
 import com.google.android.gms.maps.GoogleMap;

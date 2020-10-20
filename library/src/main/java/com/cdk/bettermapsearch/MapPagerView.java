@@ -4,13 +4,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.AttrRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.StyleRes;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +13,14 @@ import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StyleRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cdk.bettermapsearch.clustering.MapPagerClusterManager;
 import com.cdk.bettermapsearch.clustering.MapPagerMarkerRenderer;
@@ -78,7 +79,8 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     @Nullable private MapPagerAdapter<T, ? extends RecyclerView.ViewHolder> pagerAdapter;
 
-    @Nullable private T currentlySelectedItem;
+    @Nullable
+    private T currentlySelectedItem;
 
     private MapReadyCallback<T> mapReadyCallback;
 
