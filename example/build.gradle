@@ -30,10 +30,9 @@ repositories {
 
 dependencies {
     implementation project(':library')
-    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.maps.android:android-maps-utils:0.5'
-    implementation 'com.github.lsjwzh.RecyclerViewPager:lib:v1.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.0.3'
 }
