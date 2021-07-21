@@ -73,7 +73,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
 
     //region variables
     private MapView mapView;
-    private RecyclerViewPager viewPager;
+    public RecyclerViewPager viewPager;
 
     @Nullable private GoogleMap googleMap;
 
@@ -508,7 +508,7 @@ public class MapPagerView<T extends MapClusterItem> extends FrameLayout implemen
     private List<T> getClosestNeighborsList() {
         List<T> processedList = new ArrayList<>();
 
-        final Set<? extends Cluster<T>> clusters = algorithm.getClusters(12.5);
+        final Set<? extends Cluster<T>> clusters = algorithm.getClusters(12.5F);
         final List<Cluster<T>> closestClusters = getClosestClusterNeighbors(clusters);
 
         for (Cluster<T> cluster : closestClusters) {

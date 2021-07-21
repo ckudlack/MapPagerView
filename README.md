@@ -2,6 +2,12 @@
 
 A MapView combined with a ViewPager for ultimate search efficiency! Can be used in an Activity or Fragment
 
+## How to compile AAR
+
+- `./gradlew library:assemble`
+- Get library-release.aar from build/outputs/aar
+- Use [jetifier-standalone](https://developer.android.com/studio/command-line/jetifier) tool to convert dependencies to androidx
+
 ## Features
 MapPagerView encapsulates a MapView, ViewPager, and map clustering so that you can present an uncluttered, easily searchable interface to your users
 
